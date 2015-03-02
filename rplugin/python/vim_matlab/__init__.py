@@ -1,8 +1,8 @@
 import os
-from subprocess import check_output, STDOUT
+import datetime
+import errno
 
 import neovim
-import sys
 
 from matlab_controller import MatlabController
 from python_vim_utils import PythonVimUtils as vim_helper
@@ -74,6 +74,23 @@ class VimMatlab(object):
         filename = vim_helper.get_filename()
         row, col = vim_helper.get_cursor()
         self.controller.run_cell_at(row, col, filename)
+
+    @neovim.command('OpenTempMatlabScript', sync=True, nargs='*')
+    def open_temp_matlab_script(self, args):
+        dirname = os.path.join(os.path.expanduser('~'), '.vim-matlab/scratch/')
+        if not os.path.exists(dirname):
+            try:
+                os.makedirs(dirname)
+            except OSError as ex:
+                # In case of a race condition
+                if ex.errno != errno.EEXIST:
+                    raise
+        timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        if len(args) > 0:
+            filename = "{}_{}.m".format(timestamp, args[0])
+        else:
+            filename = "{}.m".format(timestamp)
+        self.vim.command('edit {}'.format(os.path.join(dirname, filename)))
 
     @neovim.autocmd('VimLeave', pattern='*', sync=True)
     def vim_leave(self):
