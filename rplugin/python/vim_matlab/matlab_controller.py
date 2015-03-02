@@ -39,6 +39,7 @@ class MatlabController():
     def close(self):
         try:
             self.key_handler.terminate()
+            self.sock.close()
         except:
             pass
 
@@ -142,24 +143,6 @@ class MatlabController():
             set(re.findall(xtest_id_pattern, t))))
         return device_ids
 
-    def run_tests(self):
-        """
-        "Test successful." should appear in MATLAB command window after this
-        completes.
-        """
-        mpath = self.__find_mfile_path()
-        self.run_commands(['a=42'])
-        self.run_cell_at(7, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.run_cell_at(4, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.run_cell_at(1, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.run_cell_at(1, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.run_commands(['a=a+1', 'b=a+1'])
-        self.run_cell_at(4, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.run_commands(['c=a+b', 'd=a+1'])
-        self.run_cell_at(7, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.run_commands(['e=a+c', 'f=a+1'])
-        self.run_cell_at(10, 1, os.path.join(mpath, 'testVimMatlab.m'))
-
     def activate_vim_window(self):
         self.__go_to_window(self.vim_window_id)
 
@@ -169,21 +152,24 @@ class MatlabController():
     def activate_command_window(self):
         self.__go_to_window(self.command_window_id)
 
+    def find_mfile_path(self):
+        return os.path.abspath(os.path.join(__file__, '../matlab'))
+
     def __launch_key_request_process(self):
         """
         Pick an unused port and start a TCP server. MATLAB will send callback
         requests through this socket.
         :return: port
         """
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(('localhost', 0))
-        _, self.key_handler_port = sock.getsockname()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.bind(('localhost', 0))
+        _, self.key_handler_port = self.sock.getsockname()
 
         self.key_handler_queue = multiprocessing.Queue()
         self.key_handler = multiprocessing.Process(
             target=self.__key_request_handler,
-            args=(sock,
+            args=(self.sock,
                   [self.command_window_id,
                    self.editor_window_id,
                    self.vim_window_id],
@@ -262,8 +248,5 @@ class MatlabController():
         return check_output('xdotool getactivewindow', shell=True).strip()
 
     def __setup_matlab_path(self):
-        mpath = self.__find_mfile_path()
+        mpath = self.find_mfile_path()
         self.run_commands(["addpath(genpath('{}'))".format(mpath)], False)
-
-    def __find_mfile_path(self):
-        return os.path.abspath(os.path.join(__file__, '../matlab'))

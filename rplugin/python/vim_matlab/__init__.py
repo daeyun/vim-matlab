@@ -1,7 +1,13 @@
+import os
+from subprocess import check_output, STDOUT
+
 import neovim
+import sys
+
 from matlab_controller import MatlabController
 from python_vim_utils import PythonVimUtils as vim_helper
 import python_vim_utils
+
 
 __created__ = 'Mar 01, 2015'
 __license__ = 'MPL 2.0'
@@ -68,13 +74,6 @@ class VimMatlab(object):
         filename = vim_helper.get_filename()
         row, col = vim_helper.get_cursor()
         self.controller.run_cell_at(row, col, filename)
-
-    @neovim.command('TestMatlabControls', sync=True)
-    def test_matlab_controls(self):
-        if self.controller is None:
-            self.activate_matlab_controls()
-
-        self.controller.run_tests()
 
     @neovim.autocmd('VimLeave', pattern='*', sync=True)
     def vim_leave(self):
