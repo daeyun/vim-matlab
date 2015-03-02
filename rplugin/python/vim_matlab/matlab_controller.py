@@ -37,7 +37,10 @@ class MatlabController():
         self.close()
 
     def close(self):
-        self.key_handler.terminate()
+        try:
+            self.key_handler.terminate()
+        except:
+            pass
 
     def run_cell_at(self, row, col, filename):
         """
@@ -157,6 +160,15 @@ class MatlabController():
         self.run_commands(['e=a+c', 'f=a+1'])
         self.run_cell_at(10, 1, os.path.join(mpath, 'testVimMatlab.m'))
 
+    def activate_vim_window(self):
+        self.__go_to_window(self.vim_window_id)
+
+    def activate_editor_window(self):
+        self.__go_to_window(self.editor_window_id)
+
+    def activate_command_window(self):
+        self.__go_to_window(self.command_window_id)
+
     def __launch_key_request_process(self):
         """
         Pick an unused port and start a TCP server. MATLAB will send callback
@@ -194,6 +206,8 @@ class MatlabController():
             client_sock, _ = sock.accept()
             msg = client_sock.recv(1024).strip()
             if msg == 'perform-run-cell':
+                self.__go_to_window(window_ids[0])
+                self.__go_to_window(window_ids[1])
                 self.__enter_keys(['Ctrl+KP_Enter'])
                 self.__go_to_window(window_ids[2])
                 self.__enable_input()
