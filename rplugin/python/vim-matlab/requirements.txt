@@ -1,0 +1,2 @@
+neovim>=0.0.28
+pyperclip>=1.5.9
