@@ -5,7 +5,7 @@ vim = None
 
 class PythonVimUtils(object):
     @staticmethod
-    def get_filename():
+    def get_current_file_path():
         return vim.eval("expand('%:p')")
 
     @staticmethod
@@ -36,6 +36,10 @@ class PythonVimUtils(object):
     @staticmethod
     def get_text_selection():
         pass
+
+    @staticmethod
+    def is_current_buffer_modified():
+        return vim.eval('&modified') == 1
 
     @staticmethod
     def echo_text(string):

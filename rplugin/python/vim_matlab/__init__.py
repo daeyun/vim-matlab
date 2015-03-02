@@ -1,6 +1,7 @@
 import os
 import datetime
 import errno
+import re
 
 import neovim
 
@@ -25,6 +26,12 @@ class VimMatlab(object):
         self.vim = vim
         python_vim_utils.vim = vim
         self.controller = None
+
+        self.function_name_pattern = \
+            re.compile(r'((?:^|\n[ \t]*)(?!%)[ \t]*(?:function(?:[ \t]|\.\.\.'
+                       r'[ \t]*\n)(?:[^\(\n]|\.\.\.[ \t]*\n)*?|classdef(?:[ \t]'
+                       r'|\.\.\.[ \t]*\n)(?:[^\<\n]|\.\.\.[ \t]*\n)*?))('
+                       r'[a-zA-Z]\w*)((?:[ \t]|\.\.\.[ \t]*\n)*(?:\(|\<|\n|$))')
 
     @neovim.command('ActivateMatlabControls', sync=True)
     def activate_matlab_controls(self):
@@ -60,7 +67,7 @@ class VimMatlab(object):
             self.activate_matlab_controls()
 
         vim_helper.save_current_buffer()
-        filename = vim_helper.get_filename()
+        filename = vim_helper.get_current_file_path()
         row, col = vim_helper.get_cursor()
         self.controller.move_cursor(row, col, filename)
         self.controller.activate_editor_window()
@@ -71,7 +78,7 @@ class VimMatlab(object):
             self.activate_matlab_controls()
 
         vim_helper.save_current_buffer()
-        filename = vim_helper.get_filename()
+        filename = vim_helper.get_current_file_path()
         row, col = vim_helper.get_cursor()
         self.controller.run_cell_at(row, col, filename)
 
@@ -92,14 +99,53 @@ class VimMatlab(object):
             filename = "{}.m".format(timestamp)
         self.vim.command('edit {}'.format(os.path.join(dirname, filename)))
 
+    @neovim.command('FixMatlabName', sync=True, nargs='*')
+    def fix_matlab_name(self, args):
+        curr_file = vim_helper.get_current_file_path()
+        modified = os.path.getmtime(curr_file)
+        changed = os.path.getctime(curr_file)
+        head_lines = self.vim.current.buffer[:100]
+        head_string = '\n'.join(head_lines)
+
+        def get_basename_ext(path):
+            filename = os.path.basename(path)
+            return os.path.splitext(filename)
+
+        def rename_function(name):
+            new_head = self.function_name_pattern.sub(
+                r"\1{}\3".format(name), head_string).split('\n')
+            for i, line in enumerate(new_head):
+                if line != head_lines[i]:
+                    self.vim.current.buffer[i] = line
+
+        basename, ext = get_basename_ext(curr_file)
+
+        if len(args) > 0:
+            new_name, new_ext = get_basename_ext(args[0])
+            new_ext = new_ext if len(new_ext) > 0 else ext
+            rename_function(new_name)
+            self.vim.command("Rename {}{}".format(new_name, new_ext))
+            return
+
+        if vim_helper.is_current_buffer_modified() or changed != modified:
+            match = self.function_name_pattern.search(head_string)
+            if match is None:
+                return
+            function_name = match.group(2)
+            self.vim.command("Rename {}{}".format(function_name, ext))
+        else:
+            rename_function(basename)
+
     @neovim.autocmd('VimLeave', pattern='*', sync=True)
     def vim_leave(self):
         if self.controller is not None:
             self.controller.close()
 
-    @neovim.autocmd('BufEnter', pattern='*', sync=True)
+    @neovim.autocmd('BufEnter', pattern='*.m', sync=True)
     def buf_enter(self):
         self.vim.command('nnoremap <silent> gm :OpenInMatlab<CR>')
         self.vim.command('nnoremap <silent> <CR> :RunMatlabCell<CR>')
+        self.vim.command('nnoremap <silent> <leader>fn :FixMatlabName<CR>')
+        self.vim.command('nnoremap <leader>rn :FixMatlabName ')
         self.vim.command(
             'vnoremap <silent> <CR> <ESC>:RunSelectionInMatlab<CR>')
