@@ -1,2 +1,3 @@
 neovim>=0.0.28
 pyperclip>=1.5.9
+sh>=1.11

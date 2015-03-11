@@ -33,38 +33,38 @@ class VimMatlab(object):
                        r'|\.\.\.[ \t]*\n)(?:[^\<\n]|\.\.\.[ \t]*\n)*?))('
                        r'[a-zA-Z]\w*)((?:[ \t]|\.\.\.[ \t]*\n)*(?:\(|\<|\n|$))')
 
-    @neovim.command('ActivateMatlabControls', sync=True)
-    def activate_matlab_controls(self):
+    @neovim.command('MatlabActivateControls', sync=True)
+    def activate(self):
         if self.controller is not None:
             return
         self.controller = MatlabController()
         self.controller.activate_vim_window()
 
-    @neovim.command('DeactivateMatlabControls', sync=True)
-    def deactivate_matlab_controls(self):
+    @neovim.command('MatlabDeativateControls', sync=True)
+    def deactivate(self):
         if self.controller is None:
             return
         self.controller.close()
         self.controller = None
 
-    @neovim.command('RestartMatlabControls', sync=True)
-    def restart_matlab_controls(self):
-        self.deactivate_matlab_controls()
-        self.activate_matlab_controls()
+    @neovim.command('MatlabRestartControls', sync=True)
+    def restart(self):
+        self.deactivate()
+        self.activate()
 
-    @neovim.command('RunSelectionInMatlab', sync=True)
+    @neovim.command('MatlabRunSelection', sync=True)
     def run_selection_in_matlab(self):
         if self.controller is None:
-            self.activate_matlab_controls()
+            self.activate()
 
         lines = vim_helper.get_selection()
         self.controller.run_commands(lines)
         self.controller.activate_vim_window()
 
-    @neovim.command('OpenInMatlab', sync=True)
+    @neovim.command('MatlabOpenInEditor', sync=True)
     def open_in_matlab(self):
         if self.controller is None:
-            self.activate_matlab_controls()
+            self.activate()
 
         vim_helper.save_current_buffer()
         filename = vim_helper.get_current_file_path()
@@ -72,17 +72,17 @@ class VimMatlab(object):
         self.controller.move_cursor(row, col, filename)
         self.controller.activate_editor_window()
 
-    @neovim.command('RunMatlabCell', sync=True)
+    @neovim.command('MatlabRunCell', sync=True)
     def run_matlab_cell(self):
         if self.controller is None:
-            self.activate_matlab_controls()
+            self.activate()
 
         vim_helper.save_current_buffer()
         filename = vim_helper.get_current_file_path()
         row, col = vim_helper.get_cursor()
         self.controller.run_cell_at(row, col, filename)
 
-    @neovim.command('OpenTempMatlabScript', sync=True, nargs='*')
+    @neovim.command('MatlabOpenTempScript', sync=True, nargs='*')
     def open_temp_matlab_script(self, args):
         dirname = os.path.join(os.path.expanduser('~'), '.vim-matlab/scratch/')
         if not os.path.exists(dirname):
@@ -99,8 +99,12 @@ class VimMatlab(object):
             filename = "{}.m".format(timestamp)
         self.vim.command('edit {}'.format(os.path.join(dirname, filename)))
 
-    @neovim.command('FixMatlabName', sync=True, nargs='*')
-    def fix_matlab_name(self, args):
+    @neovim.command('MatlabRename', sync=True, nargs='1')
+    def rename(self, args):
+        self.fix_name(args)
+
+    @neovim.command('MatlabFixName', sync=True, nargs='*')
+    def fix_name(self, args):
         curr_file = vim_helper.get_current_file_path()
         modified = os.path.getmtime(curr_file)
         changed = os.path.getctime(curr_file)
@@ -143,9 +147,4 @@ class VimMatlab(object):
 
     @neovim.autocmd('BufEnter', pattern='*.m', sync=True)
     def buf_enter(self):
-        self.vim.command('nnoremap <silent> gm :OpenInMatlab<CR>')
-        self.vim.command('nnoremap <silent> <CR> :RunMatlabCell<CR>')
-        self.vim.command('nnoremap <silent> <leader>fn :FixMatlabName<CR>')
-        self.vim.command('nnoremap <leader>rn :FixMatlabName ')
-        self.vim.command(
-            'vnoremap <silent> <CR> <ESC>:RunSelectionInMatlab<CR>')
+        pass

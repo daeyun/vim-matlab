@@ -19,16 +19,12 @@ class TestMatlabController(TestCase):
         completes.
         """
         mpath = self.controller.find_mfile_path()
-        self.controller.run_commands(['a=42'])
-        self.controller.run_cell_at(7, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.controller.run_cell_at(4, 1, os.path.join(mpath, 'testVimMatlab.m'))
+        self.controller.run_commands(['a=0'])
         self.controller.run_cell_at(1, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.controller.run_cell_at(1, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.controller.run_commands(['a=a+1', 'b=a+1'])
         self.controller.run_cell_at(4, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.controller.run_commands(['c=a+b', 'd=a+1'])
-        self.controller.run_cell_at(7, 1, os.path.join(mpath, 'testVimMatlab.m'))
-        self.controller.run_commands(['e=a+c', 'f=a+1'])
-        self.controller.run_cell_at(10, 1, os.path.join(mpath, 'testVimMatlab.m'))
-
-
+        self.controller.run_cell_at(8, 1, os.path.join(mpath, 'testVimMatlab.m'))
+        self.controller.run_cell_at(13, 1, os.path.join(mpath, 'testVimMatlab.m'))
+        self.controller.run_commands(['a=0'])
+        self.controller.run_cell_at(4, 1, os.path.join(mpath, 'testVimMatlab.m'))
+        self.controller.run_cell_at(8, 1, os.path.join(mpath, 'testVimMatlab.m'))
+        self.controller.run_cell_at(16, 1, os.path.join(mpath, 'testVimMatlab.m'))
