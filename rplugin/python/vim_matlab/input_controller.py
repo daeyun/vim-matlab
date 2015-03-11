@@ -36,7 +36,9 @@ class InputController():
             if not InputController.stack:
                 try:
                     for id in self.device_ids:
-                        Command('xinput disable {}'.format(id)).run(1)
+                        cmd = ';'.join(['xinput disable {}'.format(id) for id in
+                                        self.device_ids])
+                        Command(cmd).run(1)
                 except:
                     pass
 
@@ -52,8 +54,9 @@ class InputController():
 
                 if not InputController.stack:
                     try:
-                        for id in self.device_ids:
-                            Command('xinput enable {}'.format(id)).run(1)
+                        cmd = ';'.join(['xinput enable {}'.format(id) for id in
+                                        self.device_ids])
+                        Command(cmd).run(1)
                     except:
                         pass
 
@@ -67,5 +70,6 @@ def disable_input(func):
         finally:
             input_controller.enable_input(key)
         return result
+
     return wraps(func)(wrapper)
 

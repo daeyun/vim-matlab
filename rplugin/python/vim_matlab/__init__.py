@@ -70,6 +70,7 @@ class VimMatlab(object):
         filename = vim_helper.get_current_file_path()
         row, col = vim_helper.get_cursor()
         self.controller.move_cursor(row, col, filename)
+        self.controller.activate_command_window()
         self.controller.activate_editor_window()
 
     @neovim.command('MatlabRunCell', sync=True)

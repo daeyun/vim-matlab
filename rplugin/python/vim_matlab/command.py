@@ -2,6 +2,7 @@ import os
 import subprocess
 import threading
 import errno
+import logger
 
 __author__ = 'daeyun'
 
@@ -30,5 +31,6 @@ class Command(object):
         if thread.is_alive():
             self.process.terminate()
             thread.join()
-            raise TimeoutError(os.strerror(errno.ETIME))
+            logger.log.error('Timeout: ' + self.cmd)
+            raise TimeoutError('Timeout: ' + self.cmd + ' ' + logger.log_path)
         return self.stdout, self.stderr, self.process.returncode
