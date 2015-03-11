@@ -1,17 +1,13 @@
 import multiprocessing
 from subprocess import check_output
-import subprocess
 import socket
 import os
-import sys
 import re
-import Queue
-import time
-from input_controller import disable_input
-from xdotool import Xdotool
-from logger import log
 
 import pyperclip
+
+from input_controller import disable_input
+from xdotool import Xdotool
 
 
 __author__ = 'Daeyun Shin'
