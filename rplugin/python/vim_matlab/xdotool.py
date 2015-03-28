@@ -1,5 +1,5 @@
 from command import Command
-from logger import log, log_path
+from logger import log
 
 __author__ = 'daeyun'
 

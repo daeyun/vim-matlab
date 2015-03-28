@@ -5,7 +5,8 @@ import re
 
 import neovim
 
-from matlab_controller import MatlabController
+from matlab_gui_controller import MatlabGuiController
+from matlab_cli_controller import MatlabCliController
 from python_vim_utils import PythonVimUtils as vim_helper
 import python_vim_utils
 
@@ -25,7 +26,8 @@ class VimMatlab(object):
     def __init__(self, vim):
         self.vim = vim
         python_vim_utils.vim = vim
-        self.controller = None
+        self.gui_controller = None
+        self.cli_controller = None
 
         self.function_name_pattern = \
             re.compile(r'((?:^|\n[ \t]*)(?!%)[ \t]*(?:function(?:[ \t]|\.\.\.'
@@ -33,55 +35,84 @@ class VimMatlab(object):
                        r'|\.\.\.[ \t]*\n)(?:[^\<\n]|\.\.\.[ \t]*\n)*?))('
                        r'[a-zA-Z]\w*)((?:[ \t]|\.\.\.[ \t]*\n)*(?:\(|\<|\n|$))')
 
-    @neovim.command('MatlabActivateControls', sync=True)
+    @neovim.command('MatlabPrintCellLines', sync=True)
+    def run_print_cell_lines(self):
+        lines = vim_helper.get_current_matlab_cell_lines(
+            ignore_matlab_comments=True)
+        vim_helper.echo_text("\n".join(lines))
+
+    @neovim.command('MatlabCliRunSelection', sync=True)
+    def run_selection_in_matlab_cli(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+
+        lines = vim_helper.get_selection(ignore_matlab_comments=True)
+        self.cli_controller.run_code(lines)
+
+    @neovim.command('MatlabCliRunCell', sync=True)
+    def run_cell_in_matlab_cli(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+
+        lines = vim_helper.get_current_matlab_cell_lines(
+            ignore_matlab_comments=True)
+        self.cli_controller.run_code(lines)
+
+    @neovim.command('MatlabCliActivateControls', sync=True)
+    def activate_cli(self):
+        if self.cli_controller is not None:
+            return
+        self.cli_controller = MatlabCliController()
+
+    @neovim.command('MatlabGuiActivateControls', sync=True)
     def activate(self):
-        if self.controller is not None:
+        if self.gui_controller is not None:
             return
-        self.controller = MatlabController()
-        self.controller.activate_vim_window()
+        self.gui_controller = MatlabGuiController()
+        self.gui_controller.activate_vim_window()
 
-    @neovim.command('MatlabDeativateControls', sync=True)
+    @neovim.command('MatlabGuiDeativateControls', sync=True)
     def deactivate(self):
-        if self.controller is None:
+        if self.gui_controller is None:
             return
-        self.controller.close()
-        self.controller = None
+        self.gui_controller.close()
+        self.gui_controller = None
 
-    @neovim.command('MatlabRestartControls', sync=True)
+    @neovim.command('MatlabGuiRestartControls', sync=True)
     def restart(self):
         self.deactivate()
         self.activate()
 
-    @neovim.command('MatlabRunSelection', sync=True)
+    @neovim.command('MatlabGuiRunSelection', sync=True)
     def run_selection_in_matlab(self):
-        if self.controller is None:
+        if self.gui_controller is None:
             self.activate()
 
         lines = vim_helper.get_selection()
-        self.controller.run_commands(lines)
-        self.controller.activate_vim_window()
+        self.gui_controller.run_commands(lines)
+        self.gui_controller.activate_vim_window()
 
-    @neovim.command('MatlabOpenInEditor', sync=True)
+    @neovim.command('MatlabGuiOpenInEditor', sync=True)
     def open_in_matlab(self):
-        if self.controller is None:
+        if self.gui_controller is None:
             self.activate()
 
         vim_helper.save_current_buffer()
         filename = vim_helper.get_current_file_path()
         row, col = vim_helper.get_cursor()
-        self.controller.move_cursor(row, col, filename)
-        self.controller.activate_command_window()
-        self.controller.activate_editor_window()
+        self.gui_controller.move_cursor(row, col, filename)
+        self.gui_controller.activate_command_window()
+        self.gui_controller.activate_editor_window()
 
-    @neovim.command('MatlabRunCell', sync=True)
+    @neovim.command('MatlabGuiRunCell', sync=True)
     def run_matlab_cell(self):
-        if self.controller is None:
+        if self.gui_controller is None:
             self.activate()
 
         vim_helper.save_current_buffer()
         filename = vim_helper.get_current_file_path()
         row, col = vim_helper.get_cursor()
-        self.controller.run_cell_at(row, col, filename)
+        self.gui_controller.run_cell_at(row, col, filename)
 
     @neovim.command('MatlabOpenTempScript', sync=True, nargs='*')
     def open_temp_matlab_script(self, args):
@@ -143,9 +174,11 @@ class VimMatlab(object):
 
     @neovim.autocmd('VimLeave', pattern='*', sync=True)
     def vim_leave(self):
-        if self.controller is not None:
-            self.controller.close()
+        if self.gui_controller is not None:
+            self.gui_controller.close()
 
     @neovim.autocmd('BufEnter', pattern='*.m', sync=True)
     def buf_enter(self):
         pass
+
+

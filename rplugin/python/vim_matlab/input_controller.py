@@ -2,8 +2,10 @@ import random
 import re
 from functools import wraps
 import threading
-from command import Command
+
 import sh
+
+from command import Command
 
 
 __author__ = 'daeyun'

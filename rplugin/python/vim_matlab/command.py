@@ -1,13 +1,15 @@
-import os
 import subprocess
 import threading
-import errno
+
 import logger
+
 
 __author__ = 'daeyun'
 
+
 class TimeoutError(Exception):
     pass
+
 
 class Command(object):
     def __init__(self, cmd):

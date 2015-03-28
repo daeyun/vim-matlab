@@ -17,8 +17,7 @@ __author__ = 'Daeyun Shin'
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-class MatlabController():
-
+class MatlabGuiController():
     @disable_input
     def __init__(self):
         self.device_ids = self.find_device_ids()
@@ -95,7 +94,7 @@ class MatlabController():
         self.command_window_id = self.xdotool. \
             find_windows('^Command Window', 'com-mathworks-util-PostVMInit')[0]
 
-        self.editor_window_id = self.xdotool.\
+        self.editor_window_id = self.xdotool. \
             find_windows('^Editor', 'com-mathworks-util-PostVMInit')[0]
 
         return self.editor_window_id, self.command_window_id

@@ -1,13 +1,13 @@
 import os
 from unittest import TestCase
-import matlab_controller
+import matlab_gui_controller
 
 __author__ = 'daeyun'
 
 
 class TestMatlabController(TestCase):
     def setUp(self):
-        self.controller = matlab_controller.MatlabController()
+        self.controller = matlab_gui_controller.MatlabGuiController()
         self.controller.activate_vim_window()
 
     def tearDown(self):
