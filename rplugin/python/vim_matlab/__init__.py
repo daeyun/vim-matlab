@@ -64,6 +64,22 @@ class VimMatlab(object):
             return
         self.cli_controller = MatlabCliController()
 
+    @neovim.command('MatlabCliViewVarUnderCursor', sync=True)
+    def view_var_under_cursor(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+        var = vim_helper.get_variable_under_cursor()
+        if var:
+            self.cli_controller.run_code(['printVarInfo({});'.format(var)])
+
+    @neovim.command('MatlabCliViewSelectedVar', sync=True)
+    def view_selected_var(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+        var = vim_helper.get_selection()
+        if var:
+            self.cli_controller.run_code(['printVarInfo({});'.format(var)])
+
     @neovim.command('MatlabGuiActivateControls', sync=True)
     def activate(self):
         if self.gui_controller is not None:

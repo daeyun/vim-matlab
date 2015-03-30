@@ -7,6 +7,7 @@ import re
 import pyperclip
 
 from input_controller import disable_input
+from io_helper import find_mfile_path
 from xdotool import Xdotool
 
 
@@ -122,9 +123,6 @@ class MatlabGuiController():
     def activate_command_window(self):
         self.xdotool.activate_window(self.command_window_id)
 
-    def find_mfile_path(self):
-        return os.path.abspath(os.path.join(__file__, '../matlab'))
-
     def __launch_key_request_process(self):
         """
         Pick an unused port and start a TCP server. MATLAB will send callback
@@ -177,5 +175,5 @@ class MatlabGuiController():
 
     @disable_input
     def __setup_matlab_path(self):
-        mpath = self.find_mfile_path()
+        mpath = find_mfile_path()
         self.run_commands(["addpath(genpath('{}'))".format(mpath)], False)

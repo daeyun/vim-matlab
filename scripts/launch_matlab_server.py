@@ -13,12 +13,13 @@ import string
 
 class Matlab:
     def __init__(self):
-        self.proc = self.launch_process()
+        self.launch_process()
 
     def launch_process(self):
         self.kill()
-        return Popen(["matlab", "-nosplash", "-nodesktop"], stdin=PIPE,
+        self.proc = Popen(["matlab", "-nosplash", "-nodesktop"], stdin=PIPE,
                      shell=True, close_fds=True, preexec_fn=os.setsid)
+        return self.proc
 
     def kill(self):
         try:
@@ -27,6 +28,7 @@ class Matlab:
             pass
 
     def run_code(self, code, run_timer=True):
+
         num_retry = 0
         rand_var = ''.join(
             random.choice(string.ascii_uppercase) for _ in range(12))
@@ -43,7 +45,7 @@ class Matlab:
                 break
             except Exception as ex:
                 print ex
-                self.proc = self.launch_process()
+                self.launch_process()
                 num_retry += 1
                 time.sleep(1)
 

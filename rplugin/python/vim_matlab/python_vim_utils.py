@@ -6,8 +6,10 @@ vim = None
 
 
 class PythonVimUtils(object):
-    comment_pattern = re.compile(r'%[^\n]*$')
+    comment_pattern = re.compile(r"(^(?:[^'%]|'[^']*')*)(%.*)$")
     cell_header_pattern = re.compile(r'^%%(?:[^%]|$)')
+    ellipsis_pattern = re.compile(r'^(.*[^\s])\s*\.\.\.\s*$')
+    variable_pattern = re.compile(r"\b((?:[a-zA-Z_]\w*)*\.?[a-zA-Z_]*\w*)")
 
     @staticmethod
     def get_current_file_path():
@@ -83,5 +85,26 @@ class PythonVimUtils(object):
 
     @staticmethod
     def trim_matlab_code(lines):
-        lines = [PythonVimUtils.comment_pattern.sub('', line).strip() for line in lines]
-        return [line for line in lines if line]
+        new_lines = []
+        for line in lines:
+            line = PythonVimUtils.comment_pattern.sub(r"\1", line).strip()
+
+            if PythonVimUtils.ellipsis_pattern.match(line):
+                line = PythonVimUtils.ellipsis_pattern.sub(r"\1", line)
+                if new_lines:
+                    prev_line = new_lines.pop()
+                    line = prev_line + ',' + line
+            new_lines.append(line)
+
+        return new_lines
+
+    @staticmethod
+    def get_variable_under_cursor():
+        row, col = PythonVimUtils.get_cursor()
+        lines = PythonVimUtils.get_lines()
+        if len(lines) < row:
+            return None
+
+        for m in PythonVimUtils.variable_pattern.finditer(lines[row-1]):
+            if m.start() < col <= m.end():
+                return m.group(0)

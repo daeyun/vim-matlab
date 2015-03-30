@@ -1,12 +1,11 @@
-import re
 import time
+from threading  import Timer
+from io_helper import find_mfile_path
 
 __author__ = 'daeyun'
 
 import socket
 import logger
-
-import python_vim_utils
 
 class MatlabCliController:
     def __init__(self):
@@ -16,6 +15,7 @@ class MatlabCliController:
     def connect_to_server(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.host, self.port))
+        Timer(5, self.setup_matlab_path).start()
 
     def run_code(self, lines):
         code = ','.join(lines)
@@ -31,3 +31,7 @@ class MatlabCliController:
                 self.connect_to_server()
                 num_retry += 1
                 time.sleep(1)
+
+    def setup_matlab_path(self):
+        mpath = find_mfile_path()
+        self.run_code(["addpath(genpath('{}'));".format(mpath)])
