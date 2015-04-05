@@ -18,8 +18,11 @@ class Matlab:
     def launch_process(self):
         self.kill()
         self.proc = Popen(["matlab", "-nosplash", "-nodesktop"], stdin=PIPE,
-                     shell=True, close_fds=True, preexec_fn=os.setsid)
+                     close_fds=True, preexec_fn=os.setsid)
         return self.proc
+
+    def cancel(self):
+        os.kill(self.proc.pid, signal.SIGINT)
 
     def kill(self):
         try:
@@ -28,7 +31,6 @@ class Matlab:
             pass
 
     def run_code(self, code, run_timer=True):
-
         num_retry = 0
         rand_var = ''.join(
             random.choice(string.ascii_uppercase) for _ in range(12))
@@ -36,7 +38,7 @@ class Matlab:
             try:
                 if run_timer:
                     self.proc.stdin.write(
-                        "{}=tic;{},toc({});\n".format(rand_var, code.strip(),
+                        "{}=tic;{},try,toc({}),catch,end;\n".format(rand_var, code.strip(),
                                                       rand_var))
                 else:
                     self.proc.stdin.write(
@@ -56,18 +58,19 @@ class TCPHandler(SocketServer.StreamRequestHandler):
 
         while True:
             msg = self.rfile.readline()
-            print (msg[:74] + '...') if len(msg) > 74 else msg
             if not msg:
                 break
             msg = msg.strip()
             options = {
                 'kill': self.server.matlab.kill,
                 'restart': self.server.matlab.launch_process,
+                'cancel': self.server.matlab.cancel,
             }
 
             if msg in options:
                 options[msg]()
             else:
+                print (msg[:74] + '...') if len(msg) > 74 else msg
                 self.server.matlab.run_code(msg)
         print 'Connection closed: {}'.format(self.client_address)
 
