@@ -7,3 +7,4 @@ vnoremap <silent> <C-m> <ESC>:MatlabCliRunSelection<CR>
 nnoremap <silent> <C-m> <ESC>:MatlabCliRunCell<CR>
 nnoremap <silent> ,i <ESC>:MatlabCliViewVarUnderCursor<CR>
 vnoremap <silent> ,i <ESC>:MatlabCliViewSelectedVar<CR>
+nnoremap <silent> <leader>c :MatlabCliCancel<CR>

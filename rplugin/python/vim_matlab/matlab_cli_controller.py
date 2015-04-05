@@ -32,6 +32,9 @@ class MatlabCliController:
                 num_retry += 1
                 time.sleep(1)
 
+    def send_ctrl_c(self):
+        self.sock.sendall("cancel\n")
+
     def setup_matlab_path(self):
         mpath = find_mfile_path()
         self.run_code(["addpath(genpath('{}'));".format(mpath)])

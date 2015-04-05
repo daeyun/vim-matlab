@@ -80,6 +80,12 @@ class VimMatlab(object):
         if var:
             self.cli_controller.run_code(['printVarInfo({});'.format(var)])
 
+    @neovim.command('MatlabCliCancel', sync=True)
+    def view_selected_var(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+        self.cli_controller.send_ctrl_c()
+
     @neovim.command('MatlabGuiActivateControls', sync=True)
     def activate(self):
         if self.gui_controller is not None:

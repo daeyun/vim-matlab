@@ -8,7 +8,7 @@ vim = None
 class PythonVimUtils(object):
     comment_pattern = re.compile(r"(^(?:[^'%]|'[^']*')*)(%.*)$")
     cell_header_pattern = re.compile(r'^%%(?:[^%]|$)')
-    ellipsis_pattern = re.compile(r'^(.*[^\s])\s*\.\.\.\s*$')
+    ellipsis_pattern = re.compile(r'^(.*[^\s]?)\s*\.\.\.\s*$')
     variable_pattern = re.compile(r"\b((?:[a-zA-Z_]\w*)*\.?[a-zA-Z_]*\w*)")
 
     @staticmethod
@@ -86,15 +86,19 @@ class PythonVimUtils(object):
     @staticmethod
     def trim_matlab_code(lines):
         new_lines = []
+        ellipsis_lines = []
         for line in lines:
             line = PythonVimUtils.comment_pattern.sub(r"\1", line).strip()
 
             if PythonVimUtils.ellipsis_pattern.match(line):
-                line = PythonVimUtils.ellipsis_pattern.sub(r"\1", line)
-                if new_lines:
-                    prev_line = new_lines.pop()
-                    line = prev_line + ',' + line
-            new_lines.append(line)
+                line = PythonVimUtils.ellipsis_pattern.sub(r"\1", line).strip()
+                if line:
+                    ellipsis_lines.append(line)
+            else:
+                if ellipsis_lines:
+                    line = ''.join(ellipsis_lines) + line
+                    ellipsis_lines = []
+                new_lines.append(line)
 
         return new_lines
 

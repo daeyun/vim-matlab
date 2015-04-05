@@ -9,6 +9,7 @@ import SocketServer
 import time
 import random
 import string
+import threading
 
 
 class Matlab:
@@ -61,18 +62,26 @@ class TCPHandler(SocketServer.StreamRequestHandler):
             if not msg:
                 break
             msg = msg.strip()
+            print (msg[:74] + '...') if len(msg) > 74 else msg
+
             options = {
                 'kill': self.server.matlab.kill,
-                'restart': self.server.matlab.launch_process,
                 'cancel': self.server.matlab.cancel,
             }
 
             if msg in options:
                 options[msg]()
             else:
-                print (msg[:74] + '...') if len(msg) > 74 else msg
                 self.server.matlab.run_code(msg)
         print 'Connection closed: {}'.format(self.client_address)
+
+
+def status_monitor_thread(matlab):
+    while True:
+        matlab.proc.wait()
+        print "Restarting.."
+        matlab.launch_process()
+        time.sleep(1)
 
 
 def main():
@@ -80,6 +89,10 @@ def main():
     SocketServer.TCPServer.allow_reuse_address = True
     server = SocketServer.TCPServer((host, port), TCPHandler)
     server.matlab = Matlab()
+
+    t = threading.Thread(target=status_monitor_thread, args =(server.matlab,))
+    t.daemon = True
+    t.start()
 
     print "Started server: {}".format((host, port))
     server.serve_forever()
