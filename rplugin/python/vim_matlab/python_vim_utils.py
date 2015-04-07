@@ -7,9 +7,13 @@ vim = None
 
 class PythonVimUtils(object):
     comment_pattern = re.compile(r"(^(?:[^'%]|'[^']*')*)(%.*)$")
-    cell_header_pattern = re.compile(r'^%%(?:[^%]|$)')
-    ellipsis_pattern = re.compile(r'^(.*[^\s]?)\s*\.\.\.\s*$')
+    cell_header_pattern = re.compile(
+        r'(?:^%%(?:[^%]|$)|^[ \t]*?(?<!%)[ \t]*?(?:function|classdef)\s+)')
+    ellipsis_pattern = re.compile(r'^(.*[^\s])\s*\.\.\.\s*$')
     variable_pattern = re.compile(r"\b((?:[a-zA-Z_]\w*)*\.?[a-zA-Z_]*\w*)")
+    function_block_pattern = re.compile(
+        r'(?:^|\n[ \t]*)(?<!%)[ \t]*(?:function|classdef)(?:.*?)[^\w]([a-zA-Z]\w*) *(?:\(|(?:%|\n|\.\.\.|$))[\s\S]*?(?=(?:\n)(?<!%)[ \t]*(?:function[^a-zA-Z]|classdef[^a-zA-Z])|$)')
+    option_line_pattern = re.compile(r'%%! *vim-matlab: *(\w+) *\(([^\(]+)\)')
 
     @staticmethod
     def get_current_file_path():
@@ -58,7 +62,7 @@ class PythonVimUtils(object):
 
     @staticmethod
     def echo_text(string):
-        vim.command("echo '{}'".format(string.replace("'", r"\'")))
+        vim.command("echo '{}'".format(string.replace("'", r"''")))
 
     @staticmethod
     def get_current_matlab_cell_lines(ignore_matlab_comments=True):
@@ -78,7 +82,7 @@ class PythonVimUtils(object):
                 cell_end -= 1
                 break
 
-        lines = lines[cell_start:cell_end + 1]
+        lines = lines[cell_start+1:cell_end + 1]
         if ignore_matlab_comments:
             return PythonVimUtils.trim_matlab_code(lines)
         return lines
@@ -86,19 +90,15 @@ class PythonVimUtils(object):
     @staticmethod
     def trim_matlab_code(lines):
         new_lines = []
-        ellipsis_lines = []
         for line in lines:
             line = PythonVimUtils.comment_pattern.sub(r"\1", line).strip()
 
             if PythonVimUtils.ellipsis_pattern.match(line):
-                line = PythonVimUtils.ellipsis_pattern.sub(r"\1", line).strip()
-                if line:
-                    ellipsis_lines.append(line)
-            else:
-                if ellipsis_lines:
-                    line = ''.join(ellipsis_lines) + line
-                    ellipsis_lines = []
-                new_lines.append(line)
+                line = PythonVimUtils.ellipsis_pattern.sub(r"\1", line)
+                if new_lines:
+                    prev_line = new_lines.pop()
+                    line = prev_line + ',' + line
+            new_lines.append(line)
 
         return new_lines
 
@@ -109,6 +109,27 @@ class PythonVimUtils(object):
         if len(lines) < row:
             return None
 
-        for m in PythonVimUtils.variable_pattern.finditer(lines[row-1]):
+        for m in PythonVimUtils.variable_pattern.finditer(lines[row - 1]):
             if m.start() < col <= m.end():
                 return m.group(0)
+
+    @staticmethod
+    def get_options():
+        lines = vim.current.buffer[:20]
+        options = {}
+        for line in lines:
+            m = PythonVimUtils.option_line_pattern.match(line)
+            if m is None:
+                break
+            options[m.group(1)] = [s.strip() for s in m.group(2).split(',')]
+        return options
+
+    @staticmethod
+    def get_function_blocks():
+        lines = vim.current.buffer
+        content = '\n'.join(lines)
+        function_blocks = {}
+        for m in PythonVimUtils.function_block_pattern.finditer(content):
+            function_blocks[m.group(1)] = m.group(0).strip()
+
+        return function_blocks

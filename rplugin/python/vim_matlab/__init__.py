@@ -1,3 +1,4 @@
+import hashlib
 import os
 import datetime
 import errno
@@ -46,6 +47,8 @@ class VimMatlab(object):
         if self.cli_controller is None:
             self.activate_cli()
 
+        self.matlab_write_function_files()
+
         lines = vim_helper.get_selection(ignore_matlab_comments=True)
         self.cli_controller.run_code(lines)
 
@@ -53,6 +56,8 @@ class VimMatlab(object):
     def run_cell_in_matlab_cli(self):
         if self.cli_controller is None:
             self.activate_cli()
+
+        self.matlab_write_function_files()
 
         lines = vim_helper.get_current_matlab_cell_lines(
             ignore_matlab_comments=True)
@@ -81,10 +86,55 @@ class VimMatlab(object):
             self.cli_controller.run_code(['printVarInfo({});'.format(var)])
 
     @neovim.command('MatlabCliCancel', sync=True)
-    def view_selected_var(self):
+    def matlab_cli_cancel(self):
         if self.cli_controller is None:
             self.activate_cli()
         self.cli_controller.send_ctrl_c()
+
+    @neovim.command('MatlabWriteFunctionFiles', sync=True)
+    def matlab_write_function_files(self):
+        options = vim_helper.get_options()
+        if 'split' in options:
+            group_name = options['split'][0]
+        else:
+            return
+
+        dir_path = os.path.join(
+            os.path.dirname(vim_helper.get_current_file_path()), group_name)
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+
+        existing_filenames = [name for name in os.listdir(dir_path) if
+                              name.endswith('.m')]
+
+        function_blocks = vim_helper.get_function_blocks()
+        new_filenames = [name + '.m' for name in function_blocks.keys()]
+
+        unused_filenames = list(set(existing_filenames) - set(new_filenames))
+        for name in unused_filenames:
+            try:
+                os.remove(os.path.join(dir_path, name))
+            except:
+                pass
+
+        added_filenames = list(set(new_filenames) - set(existing_filenames))
+        for name in added_filenames:
+            content = function_blocks[os.path.splitext(name)[0]].strip()
+            with open(os.path.join(dir_path, name), 'w') as f:
+                f.write(content)
+
+        common_filenames = set.intersection(
+            *[set(existing_filenames), set(new_filenames)])
+        for name in common_filenames:
+            content = function_blocks[os.path.splitext(name)[0]].strip()
+            code_hash = hashlib.md5(content).hexdigest()
+            with open(os.path.join(dir_path, name), 'r+') as f:
+                file_hash = hashlib.md5(f.read().strip()).hexdigest()
+                f.seek(0)
+                if code_hash != file_hash:
+                    f.write(content)
+                    f.truncate()
+
 
     @neovim.command('MatlabGuiActivateControls', sync=True)
     def activate(self):
@@ -202,5 +252,9 @@ class VimMatlab(object):
     @neovim.autocmd('BufEnter', pattern='*.m', sync=True)
     def buf_enter(self):
         pass
+
+    @neovim.autocmd('BufWrite', pattern='*.m', sync=True)
+    def buf_write(self):
+        self.matlab_write_function_files()
 
 

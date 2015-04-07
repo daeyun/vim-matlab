@@ -1,11 +1,14 @@
 import time
-from threading  import Timer
+from threading import Timer
+
 from io_helper import find_mfile_path
+
 
 __author__ = 'daeyun'
 
 import socket
 import logger
+
 
 class MatlabCliController:
     def __init__(self):
@@ -31,9 +34,6 @@ class MatlabCliController:
                 self.connect_to_server()
                 num_retry += 1
                 time.sleep(1)
-
-    def send_ctrl_c(self):
-        self.sock.sendall("cancel\n")
 
     def setup_matlab_path(self):
         mpath = find_mfile_path()
