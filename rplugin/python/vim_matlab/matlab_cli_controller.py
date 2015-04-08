@@ -38,3 +38,6 @@ class MatlabCliController:
     def setup_matlab_path(self):
         mpath = find_mfile_path()
         self.run_code(["addpath(genpath('{}'));".format(mpath)])
+
+    def send_ctrl_c(self):
+        self.sock.sendall("cancel\n")
