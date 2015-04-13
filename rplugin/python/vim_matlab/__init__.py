@@ -17,7 +17,6 @@ __created__ = 'Mar 01, 2015'
 __license__ = 'MPL 2.0'
 __author__ = 'Daeyun Shin'
 __email__ = "daeyun@daeyunshin.com"
-__version__ = '0.1'
 
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
