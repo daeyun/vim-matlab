@@ -7,7 +7,7 @@ import re
 import pyperclip
 
 from input_controller import disable_input
-from io_helper import find_mfile_path
+from io_helper import find_plugin_matlab_path
 from xdotool import Xdotool
 
 
@@ -175,5 +175,5 @@ class MatlabGuiController():
 
     @disable_input
     def __setup_matlab_path(self):
-        mpath = find_mfile_path()
+        mpath = find_plugin_matlab_path()
         self.run_commands(["addpath(genpath('{}'))".format(mpath)], False)

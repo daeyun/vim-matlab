@@ -1,7 +1,7 @@
 import time
 from threading import Timer
 
-from io_helper import find_mfile_path
+from io_helper import find_plugin_matlab_path
 
 
 __author__ = 'daeyun'
@@ -36,8 +36,14 @@ class MatlabCliController:
                 time.sleep(1)
 
     def setup_matlab_path(self):
-        mpath = find_mfile_path()
+        mpath = find_plugin_matlab_path()
         self.run_code(["addpath(genpath('{}'));".format(mpath)])
+
+    def open_in_matlab_editor(self, path):
+        self.run_code(["edit {};".format(path)])
+
+    def help_command(self, name):
+        self.run_code(["help {};".format(name)])
 
     def send_ctrl_c(self):
         self.sock.sendall("cancel\n")

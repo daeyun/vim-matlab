@@ -3,6 +3,7 @@ import os
 import datetime
 import errno
 import re
+import time
 
 import neovim
 
@@ -29,6 +30,7 @@ class VimMatlab(object):
         python_vim_utils.vim = vim
         self.gui_controller = None
         self.cli_controller = None
+        self.buffer_state = {}
 
         self.function_name_pattern = \
             re.compile(r'((?:^|\n[ \t]*)(?!%)[ \t]*(?:function(?:[ \t]|\.\.\.'
@@ -90,6 +92,20 @@ class VimMatlab(object):
         if self.cli_controller is None:
             self.activate_cli()
         self.cli_controller.send_ctrl_c()
+
+    @neovim.command('MatlabCliOpenInMatlabEditor', sync=True)
+    def matlab_cli_open_in_matlab_editor(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+        path = vim_helper.get_current_file_path()
+        self.cli_controller.open_in_matlab_editor(path)
+
+    @neovim.command('MatlabCliHelp', sync=True)
+    def matlab_cli_help(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+        var = vim_helper.get_variable_under_cursor()
+        self.cli_controller.help_command(var)
 
     @neovim.command('MatlabWriteFunctionFiles', sync=True)
     def matlab_write_function_files(self):
@@ -249,12 +265,52 @@ class VimMatlab(object):
         if self.gui_controller is not None:
             self.gui_controller.close()
 
+    @neovim.autocmd('BufDelete', pattern='*.m')
+    def buf_delete(self):
+        path = vim_helper.get_current_file_path()
+        self.buffer_state.pop(path, None)
+
+    @neovim.autocmd('InsertEnter', pattern='*.m')
+    def insert_enter(self):
+        self.refresh_buffer()
+
+    @neovim.autocmd('BufLeave', pattern='*.m')
+    def buf_leave(self):
+        self.refresh_buffer()
+
+    @neovim.autocmd('CursorMoved', pattern='*.m')
+    def cursor_moved(self):
+        self.refresh_buffer()
+
     @neovim.autocmd('BufEnter', pattern='*.m', sync=True)
     def buf_enter(self):
-        pass
+        path = vim_helper.get_current_file_path()
+        if path in self.buffer_state:
+            self.buffer_state[path]['last_seen'] = time.time()
+        else:
+            self.buffer_state[path] = {
+                'last_seen': time.time()
+            }
 
     @neovim.autocmd('BufWrite', pattern='*.m', sync=True)
     def buf_write(self):
+        path = vim_helper.get_current_file_path()
+        self.buffer_state[path]['last_seen'] = time.time()
+
         self.matlab_write_function_files()
 
+    def refresh_buffer(self):
+        path = vim_helper.get_current_file_path()
+        last_seen = self.buffer_state[path]['last_seen']
+        if time.time() - last_seen < 1 or not os.path.isfile(path):
+            return
+
+        modified = os.stat(path).st_mtime
+
+        if modified > last_seen:
+            row_col = vim_helper.get_cursor()
+            vim_helper.edit_file(path)
+            vim_helper.set_cursor(row_col)
+
+        self.buffer_state[path]['last_seen'] = time.time()
 

@@ -24,12 +24,20 @@ class PythonVimUtils(object):
         vim.command("w")
 
     @staticmethod
+    def edit_file(path):
+        vim.command("silent e! {}".format(path))
+
+    @staticmethod
     def get_cursor():
         """
         :return: 1-indexed current cursor position
         """
         row, col = vim.current.window.cursor
         return row, col + 1
+
+    @staticmethod
+    def set_cursor(row_col):
+        vim.current.window.cursor = (row_col[0], row_col[1] - 1)
 
     @staticmethod
     def get_selection(ignore_matlab_comments=True):
