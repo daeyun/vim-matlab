@@ -1,7 +1,11 @@
 vim-matlab
 ===========
 
-Start vim-matlab server. It launches a CLI Matlab instance and and keeps it alive -- i.e. when Matlab crashes (e.g. segfault during MEX development), it will launch another process.
+An alternative to Matlab's default editor for Vim users.
+
+### Usage
+
+`vim-matlab-server.py` launches a CLI Matlab instance and and keeps it alive -- i.e. when Matlab crashes (e.g. segfault during MEX development), it will launch another process.
 It also pipes commands from vim to Matlab.
 
 ```
