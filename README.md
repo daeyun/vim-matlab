@@ -16,4 +16,4 @@ Open Vim in another terminal, start editing .m files
 
 - `:MatlabCliRunCell` executes code in the current cell -- i.e. `%%` blocks. Similar to Ctrl-Enter in the Matlab editor.
 
-See ./rplugin/python/vim_matlab/__init__.py for a list of available commands
+See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available commands
