@@ -80,6 +80,7 @@ class PythonVimUtils(object):
         cell_start = crow - 1
         while cell_start > 0:
             if PythonVimUtils.cell_header_pattern.match(lines[cell_start]):
+                cell_start += 1
                 break
             cell_start -= 1
 
@@ -90,7 +91,7 @@ class PythonVimUtils(object):
                 cell_end -= 1
                 break
 
-        lines = lines[cell_start+1:cell_end + 1]
+        lines = lines[cell_start:cell_end + 1]
         if ignore_matlab_comments:
             return PythonVimUtils.trim_matlab_code(lines)
         return lines

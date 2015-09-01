@@ -7,7 +7,6 @@ import time
 
 import neovim
 
-from matlab_gui_controller import MatlabGuiController
 from matlab_cli_controller import MatlabCliController
 from python_vim_utils import PythonVimUtils as vim_helper
 import python_vim_utils
@@ -150,56 +149,6 @@ class VimMatlab(object):
                     f.write(content)
                     f.truncate()
 
-
-    @neovim.command('MatlabGuiActivateControls', sync=True)
-    def activate(self):
-        if self.gui_controller is not None:
-            return
-        self.gui_controller = MatlabGuiController()
-        self.gui_controller.activate_vim_window()
-
-    @neovim.command('MatlabGuiDeativateControls', sync=True)
-    def deactivate(self):
-        if self.gui_controller is None:
-            return
-        self.gui_controller.close()
-        self.gui_controller = None
-
-    @neovim.command('MatlabGuiRestartControls', sync=True)
-    def restart(self):
-        self.deactivate()
-        self.activate()
-
-    @neovim.command('MatlabGuiRunSelection', sync=True)
-    def run_selection_in_matlab(self):
-        if self.gui_controller is None:
-            self.activate()
-
-        lines = vim_helper.get_selection()
-        self.gui_controller.run_commands(lines)
-        self.gui_controller.activate_vim_window()
-
-    @neovim.command('MatlabGuiOpenInEditor', sync=True)
-    def open_in_matlab(self):
-        if self.gui_controller is None:
-            self.activate()
-
-        vim_helper.save_current_buffer()
-        filename = vim_helper.get_current_file_path()
-        row, col = vim_helper.get_cursor()
-        self.gui_controller.move_cursor(row, col, filename)
-        self.gui_controller.activate_command_window()
-        self.gui_controller.activate_editor_window()
-
-    @neovim.command('MatlabGuiRunCell', sync=True)
-    def run_matlab_cell(self):
-        if self.gui_controller is None:
-            self.activate()
-
-        vim_helper.save_current_buffer()
-        filename = vim_helper.get_current_file_path()
-        row, col = vim_helper.get_cursor()
-        self.gui_controller.run_cell_at(row, col, filename)
 
     @neovim.command('MatlabOpenTempScript', sync=True, nargs='*')
     def open_temp_matlab_script(self, args):
