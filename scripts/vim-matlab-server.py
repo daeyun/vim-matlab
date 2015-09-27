@@ -39,8 +39,9 @@ class Matlab:
             try:
                 if run_timer:
                     self.proc.stdin.write(
-                        "{}=tic;{},try,toc({}),catch,end;\n".format(rand_var, code.strip(),
-                                                      rand_var))
+                        ("{randvar}=tic;{code},try,toc({randvar}),catch,"
+                         "end,clear('{randvar}');\n").format(
+                             randvar=rand_var, code=code.strip()))
                 else:
                     self.proc.stdin.write(
                         "{}\n".format(code.strip()))
