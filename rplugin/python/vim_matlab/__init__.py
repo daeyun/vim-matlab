@@ -4,6 +4,7 @@ import datetime
 import errno
 import re
 import time
+import collections
 
 import neovim
 
@@ -28,7 +29,7 @@ class VimMatlab(object):
         python_vim_utils.vim = vim
         self.gui_controller = None
         self.cli_controller = None
-        self.buffer_state = {}
+        self.buffer_state = collections.defaultdict(dict)
 
         self.function_name_pattern = \
             re.compile(r'((?:^|\n[ \t]*)(?!%)[ \t]*(?:function(?:[ \t]|\.\.\.'
@@ -213,52 +214,32 @@ class VimMatlab(object):
         if self.gui_controller is not None:
             self.gui_controller.close()
 
+    @neovim.autocmd('InsertEnter', pattern='*.m')
+    def insert_enter(self):
+        self.refresh_buffer()
+
     @neovim.autocmd('BufDelete', pattern='*.m')
     def buf_delete(self):
         path = vim_helper.get_current_file_path()
         self.buffer_state.pop(path, None)
 
-    @neovim.autocmd('InsertEnter', pattern='*.m')
-    def insert_enter(self):
-        self.refresh_buffer()
-
-    @neovim.autocmd('BufLeave', pattern='*.m')
-    def buf_leave(self):
-        self.refresh_buffer()
-
-    @neovim.autocmd('CursorMoved', pattern='*.m')
-    def cursor_moved(self):
-        self.refresh_buffer()
-
-    @neovim.autocmd('BufEnter', pattern='*.m', sync=True)
-    def buf_enter(self):
-        path = vim_helper.get_current_file_path()
-        if path in self.buffer_state:
-            self.buffer_state[path]['last_seen'] = time.time()
-        else:
-            self.buffer_state[path] = {
-                'last_seen': time.time()
-            }
-
     @neovim.autocmd('BufWrite', pattern='*.m', sync=True)
     def buf_write(self):
         path = vim_helper.get_current_file_path()
-        self.buffer_state[path]['last_seen'] = time.time()
+        self.buffer_state[path]['last_written'] = time.time()
 
         self.matlab_write_function_files()
 
     def refresh_buffer(self):
         path = vim_helper.get_current_file_path()
-        last_seen = self.buffer_state[path]['last_seen']
-        if time.time() - last_seen < 1 or not os.path.isfile(path):
+        last_written = self.buffer_state[path]['last_written']
+        if time.time() - last_written < 1 or not os.path.isfile(path):
             return
 
         modified = os.stat(path).st_mtime
 
-        if modified > last_seen:
+        if modified > last_written + 8:
             row_col = vim_helper.get_cursor()
             vim_helper.edit_file(path)
             vim_helper.set_cursor(row_col)
-
-        self.buffer_state[path]['last_seen'] = time.time()
 
