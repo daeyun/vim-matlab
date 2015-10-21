@@ -42,6 +42,12 @@ class MatlabCliController:
     def open_in_matlab_editor(self, path):
         self.run_code(["edit {};".format(path)])
 
+    def open_workspace(self):
+        self.run_code(["workspace;"])
+
+    def openvar(self, name):
+        self.run_code(["openvar {};".format(name)])
+
     def help_command(self, name):
         self.run_code(["help {};".format(name)])
 

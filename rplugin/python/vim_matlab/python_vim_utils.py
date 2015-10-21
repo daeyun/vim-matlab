@@ -113,14 +113,22 @@ class PythonVimUtils(object):
 
     @staticmethod
     def get_variable_under_cursor():
+        line = PythonVimUtils.get_current_line()
+        if not line:
+            return None
+        _, col = PythonVimUtils.get_cursor()
+
+        for m in PythonVimUtils.variable_pattern.finditer(line):
+            if m.start() < col <= m.end():
+                return m.group(0)
+
+    @staticmethod
+    def get_current_line():
         row, col = PythonVimUtils.get_cursor()
         lines = PythonVimUtils.get_lines()
         if len(lines) < row:
             return None
-
-        for m in PythonVimUtils.variable_pattern.finditer(lines[row - 1]):
-            if m.start() < col <= m.end():
-                return m.group(0)
+        return lines[row - 1]
 
     @staticmethod
     def get_options():

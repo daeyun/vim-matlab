@@ -53,6 +53,16 @@ class VimMatlab(object):
         lines = vim_helper.get_selection(ignore_matlab_comments=True)
         self.cli_controller.run_code(lines)
 
+    @neovim.command('MatlabCliRunLine', sync=True)
+    def run_current_line(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+
+        self.matlab_write_function_files()
+
+        line = [vim_helper.get_current_line()]
+        self.cli_controller.run_code(line)
+
     @neovim.command('MatlabCliRunCell', sync=True)
     def run_cell_in_matlab_cli(self):
         if self.cli_controller is None:
@@ -99,12 +109,25 @@ class VimMatlab(object):
         path = vim_helper.get_current_file_path()
         self.cli_controller.open_in_matlab_editor(path)
 
+    @neovim.command('MatlabCliOpenWorkspace', sync=True)
+    def matlab_cli_open_in_matlab_editor(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+        self.cli_controller.open_workspace()
+
     @neovim.command('MatlabCliHelp', sync=True)
     def matlab_cli_help(self):
         if self.cli_controller is None:
             self.activate_cli()
         var = vim_helper.get_variable_under_cursor()
         self.cli_controller.help_command(var)
+
+    @neovim.command('MatlabCliOpenVar', sync=True)
+    def matlab_cli_help(self):
+        if self.cli_controller is None:
+            self.activate_cli()
+        var = vim_helper.get_variable_under_cursor()
+        self.cli_controller.openvar(var)
 
     @neovim.command('MatlabWriteFunctionFiles', sync=True)
     def matlab_write_function_files(self):

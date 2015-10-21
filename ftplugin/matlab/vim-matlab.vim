@@ -1,14 +1,15 @@
-nnoremap <silent> <leader>gm :MatlabGuiOpenInEditor<CR>
-nnoremap <silent> ,m :MatlabGuiRunCell<CR>
-nnoremap <silent> <leader>fn :MatlabFixName<CR>
-nnoremap <leader>rn :MatlabRename
-vnoremap <silent> ,m <ESC>:MatlabGuiRunSelection<CR>
-vnoremap <silent> <C-m> <ESC>:MatlabCliRunSelection<CR>
-nnoremap <silent> <C-m> <ESC>:MatlabCliRunCell<CR>
-nnoremap <silent> ,i <ESC>:MatlabCliViewVarUnderCursor<CR>
-vnoremap <silent> ,i <ESC>:MatlabCliViewSelectedVar<CR>
-nnoremap <silent> ,h <ESC>:MatlabCliHelp<CR>
-nnoremap <silent> ,e <ESC>:MatlabOpenInMatlabEditor<CR>
-nnoremap <silent> <leader>c :MatlabCliCancel<CR>
+nnoremap <buffer><silent> <leader>gm :MatlabGuiOpenInEditor<CR>
+nnoremap <buffer><silent> ,m :MatlabGuiRunCell<CR>
+nnoremap <buffer><silent> <leader>fn :MatlabFixName<CR>
+nnoremap <buffer>         <leader>rn :MatlabRename
+vnoremap <buffer><silent> ,m <ESC>:MatlabGuiRunSelection<CR>
+vnoremap <buffer><silent> <C-m> <ESC>:MatlabCliRunSelection<CR>
+nnoremap <buffer><silent> <C-m> <ESC>:MatlabCliRunCell<CR>
+nnoremap <buffer><silent> ,i <ESC>:MatlabCliViewVarUnderCursor<CR>
+vnoremap <buffer><silent> ,i <ESC>:MatlabCliViewSelectedVar<CR>
+nnoremap <buffer><silent> ,h <ESC>:MatlabCliHelp<CR>
+nnoremap <buffer><silent> ,e <ESC>:MatlabCliOpenInMatlabEditor<CR>
+nnoremap <buffer><silent> <leader>c :MatlabCliCancel<CR>
+nnoremap <buffer><silent> <C-h> :MatlabCliRunLine<CR>
 
 set shortmess+=A
