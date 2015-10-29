@@ -25,3 +25,8 @@ Open Vim in another terminal, start editing .m files
 - `:MatlabCliHelp` (,h) prints help message for the word under the cursor.
 
 See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available commands, and [vim-matlab.vim](ftplugin/matlab/vim-matlab.vim) for default key bindings.
+
+### Recommended Plugins
+
+[MatlabFilesEdition](http://www.vim.org/scripts/script.php?script_id=2407)
+[matchit.zip](http://www.vim.org/scripts/script.php?script_id=39)
