@@ -60,7 +60,7 @@ class VimMatlab(object):
 
         self.matlab_write_function_files()
 
-        line = [vim_helper.get_current_line()]
+        line = [vim_helper.get_current_matlab_line()]
         self.cli_controller.run_code(line)
 
     @neovim.command('MatlabCliRunCell', sync=True)

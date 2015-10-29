@@ -99,15 +99,24 @@ class PythonVimUtils(object):
     @staticmethod
     def trim_matlab_code(lines):
         new_lines = []
+
+        ellipsis = PythonVimUtils.ellipsis_pattern
+
+        is_continuation = False
+
         for line in lines:
             line = PythonVimUtils.comment_pattern.sub(r"\1", line).strip()
 
-            if PythonVimUtils.ellipsis_pattern.match(line):
-                line = PythonVimUtils.ellipsis_pattern.sub(r"\1", line)
-                if new_lines:
-                    prev_line = new_lines.pop()
-                    line = prev_line + ',' + line
-            new_lines.append(line)
+            has_ellipsis_suffix = ellipsis.match(line)
+            if has_ellipsis_suffix:
+                line = ellipsis.sub(r"\1", line)
+
+            if is_continuation and new_lines:
+                new_lines[-1] += line
+            else:
+                new_lines.append(line)
+
+            is_continuation = has_ellipsis_suffix
 
         return new_lines
 
@@ -129,6 +138,29 @@ class PythonVimUtils(object):
         if len(lines) < row:
             return None
         return lines[row - 1]
+
+    @staticmethod
+    def get_current_matlab_line():
+        row, col = PythonVimUtils.get_cursor()
+        lines = PythonVimUtils.get_lines()
+        if len(lines) < row:
+            return None
+
+        cur = row - 1
+
+        cont = PythonVimUtils.ellipsis_pattern
+
+        off = 0
+        while cur + 1 < len(lines) and cont.match(lines[cur + off]):
+            off += 1
+
+        line = lines[cur + off]
+
+        while cur + off > 0 and cont.match(lines[cur + off - 1]):
+            line = cont.sub(r"\1", lines[cur + off - 1]) + line
+            off -= 1
+
+        return line
 
     @staticmethod
     def get_options():
