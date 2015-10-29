@@ -28,6 +28,5 @@ See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available c
 
 ### Recommended Plugins
 
-[MatlabFilesEdition](http://www.vim.org/scripts/script.php?script_id=2407)
-
-[matchit.zip](http://www.vim.org/scripts/script.php?script_id=39)
+- [MatlabFilesEdition](http://www.vim.org/scripts/script.php?script_id=2407)
+- [matchit.zip](http://www.vim.org/scripts/script.php?script_id=39)
