@@ -9,6 +9,7 @@ import SocketServer
 import time
 import random
 import string
+from sys import stdin
 import threading
 
 
@@ -54,6 +55,7 @@ class Matlab:
                 time.sleep(1)
 
 
+
 class TCPHandler(SocketServer.StreamRequestHandler):
     def handle(self):
         print "New connection: {}".format(self.client_address)
@@ -84,6 +86,10 @@ def status_monitor_thread(matlab):
         matlab.launch_process()
         time.sleep(1)
 
+def forward_input(matlab):
+    """Forwards input from stdin to matlab's process stdin"""
+    while True:
+        matlab.proc.stdin.write(stdin.readline())
 
 def main():
     host, port = "localhost", 43889
@@ -94,6 +100,10 @@ def main():
     t = threading.Thread(target=status_monitor_thread, args =(server.matlab,))
     t.daemon = True
     t.start()
+
+    input_t = threading.Thread(target=forward_input, args =(server.matlab,))
+    input_t.daemon = True
+    input_t.start()
 
     print "Started server: {}".format((host, port))
     server.serve_forever()
