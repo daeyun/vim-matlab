@@ -106,6 +106,8 @@ class PythonVimUtils(object):
 
         for line in lines:
             line = PythonVimUtils.comment_pattern.sub(r"\1", line).strip()
+            if line in ('', '...'):
+                continue
 
             has_ellipsis_suffix = ellipsis.match(line)
             if has_ellipsis_suffix:
