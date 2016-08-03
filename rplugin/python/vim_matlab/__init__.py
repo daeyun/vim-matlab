@@ -110,7 +110,7 @@ class VimMatlab(object):
         self.cli_controller.open_in_matlab_editor(path)
 
     @neovim.command('MatlabCliOpenWorkspace', sync=True)
-    def matlab_cli_open_in_matlab_editor(self):
+    def matlab_cli_open_workspace(self):
         if self.cli_controller is None:
             self.activate_cli()
         self.cli_controller.open_workspace()
