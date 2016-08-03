@@ -123,7 +123,7 @@ class VimMatlab(object):
         self.cli_controller.help_command(var)
 
     @neovim.command('MatlabCliOpenVar', sync=True)
-    def matlab_cli_help(self):
+    def matlab_cli_open_var(self):
         if self.cli_controller is None:
             self.activate_cli()
         var = vim_helper.get_variable_under_cursor()
