@@ -29,6 +29,8 @@ Then open Vim in another terminal and start editing .m files
 
 See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available commands, and [vim-matlab.vim](ftplugin/matlab/vim-matlab.vim) for default key bindings.
 
+![Screenshot](/docs/images/screenshot.png)
+
 ### Installation
 
 Install the python3 client for Neovim.
