@@ -27,6 +27,12 @@ Then open Vim in another terminal and start editing .m files
 
 - `:MatlabCliHelp` (,h) prints help message for the word under the cursor.
 
+- `:MatlabNormalModeCreateCell` (C-l) inserts a cell marker above the current line.
+
+- `:MatlabVisualModeCreateCell` (C-l) inserts cell markers above and below the visual selection.
+
+- `:MatlabInsertModeCreateCell` (C-l) inserts a cell marker at the beginning of the current line.
+
 See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available commands, and [vim-matlab.vim](ftplugin/matlab/vim-matlab.vim) for default key bindings.
 
 ![Screenshot](/docs/images/screenshot.png)
