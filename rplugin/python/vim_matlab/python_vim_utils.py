@@ -6,7 +6,7 @@ vim = None
 
 
 class PythonVimUtils(object):
-    comment_pattern = re.compile(r"(^(?:[^'%]|'[^']*')*)(%.*)$")
+    comment_pattern = re.compile(r"(^(?:(?<![\.\w\)\}\]])'[^']*'|[^%]*?)*)(%.*|$)")
     cell_header_pattern = re.compile(
         r'(?:^%%(?:[^%]|$)|^[ \t]*?(?<!%)[ \t]*?(?:function|classdef)\s+)')
     ellipsis_pattern = re.compile(r'^(.*[^\s])\s*\.\.\.\s*$')
