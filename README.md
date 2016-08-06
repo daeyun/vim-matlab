@@ -53,6 +53,8 @@ Plug 'daeyun/vim-matlab'
 
 Install and run `:UpdateRemotePlugins`
 
+Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to use the snippets.
+
 
 ### Development
 

@@ -1,0 +1,27 @@
+snippet addpath
+	addpath(genpath('${1}'));
+snippet function
+	function [varargout] = ${1:`vim_snippets#Filename()`}(varargin)
+	${2}
+snippet functionInputParser
+	function [varargout] = ${1:`vim_snippets#Filename()`}(varargin)
+	p=inputParser;
+	addOptional(p, 'isVerbose', false);
+	try parse(p,varargin{:}),catch parse(p,{}),end,args=p.Results;
+	%%
+	${2}
+snippet for
+	for ${1:i} = 1:${2}
+	    ${3}
+	end
+snippet bs
+	bsxfun(@${3:rdivide},);
+snippet %
+	%%
+	${1}
+	
+	%%
+# Specific to https://github.com/daeyun/vim-matlab
+snippet %%!
+	%%! vim-matlab: split(${1:`vim_snippets#Filename()`_temp})
+	${2}
