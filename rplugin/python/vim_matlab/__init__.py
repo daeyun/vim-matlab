@@ -241,6 +241,10 @@ class VimMatlab(object):
     def insert_enter(self):
         self.refresh_buffer()
 
+    @neovim.autocmd('BufEnter', pattern='*.m')
+    def buf_enter(self):
+        self.set_last_written()
+
     @neovim.autocmd('BufDelete', pattern='*.m')
     def buf_delete(self):
         path = vim_helper.get_current_file_path()
@@ -248,10 +252,12 @@ class VimMatlab(object):
 
     @neovim.autocmd('BufWrite', pattern='*.m', sync=True)
     def buf_write(self):
+        self.set_last_written()
+        self.matlab_write_function_files()
+
+    def set_last_written(self):
         path = vim_helper.get_current_file_path()
         self.buffer_state[path]['last_written'] = time.time()
-
-        self.matlab_write_function_files()
 
     def refresh_buffer(self):
         path = vim_helper.get_current_file_path()
