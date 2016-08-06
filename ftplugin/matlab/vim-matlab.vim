@@ -1,3 +1,7 @@
+command! MatlabNormalModeCreateCell :execute "normal! :set paste<CR>m`O%%<ESC>``:set nopaste<CR>"
+command! MatlabVisualModeCreateCell :execute "normal! gvD:set paste<CR>O%%<CR>%%<ESC>P:set nopaste<CR>"
+command! MatlabInsertModeCreateCell :execute "normal! I%% "
+
 nnoremap <buffer>         <leader>rn :MatlabRename
 nnoremap <buffer><silent> <leader>fn :MatlabFixName<CR>
 vnoremap <buffer><silent> <C-m> <ESC>:MatlabCliRunSelection<CR>
@@ -12,6 +16,6 @@ nnoremap <buffer><silent> <C-h> :MatlabCliRunLine<CR>
 setlocal shortmess+=A
 setlocal formatoptions-=cro
 
-nnoremap <buffer><silent> <C-l> :set paste<CR>m`O%%<Esc>``:set nopaste<CR>
-vnoremap <buffer><silent> <C-l> d:set paste<cr>O%%<cr>%%<esc>P:set nopaste<cr>
-inoremap <buffer><silent> <C-l> <C-o>0%% 
+nnoremap <buffer><silent> <C-l> :MatlabNormalModeCreateCell<CR>
+vnoremap <buffer><silent> <C-l> :<C-u>MatlabVisualModeCreateCell<CR>
+inoremap <buffer><silent> <C-l> <C-o>:MatlabInsertModeCreateCell<CR>
