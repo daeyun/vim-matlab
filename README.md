@@ -15,11 +15,11 @@ Run
 
 This will start a Matlab REPL and redirect commands received from Vim to Matlab. When Matlab crashes (e.g. segfault during MEX development), it will launch another process.
 
-Then open Vim in another terminal and start editing .m files
+Then open Vim in another terminal and start editing .m files.
 
-- `:MatlabCliCancel` (\<leader\>C) tells the server to send SIGINT to Matlab, canceling current operation.
+- `:MatlabCliCancel` (\<leader\>c) tells the server to send SIGINT to Matlab, canceling current operation.
 
-- `:MatlabCliRunSelection` executes the highlighted Matlab code
+- `:MatlabCliRunSelection` executes the highlighted Matlab code.
 
 - `:MatlabCliRunCell` executes code in the current cell — i.e. `%%` blocks. Similar to Ctrl-Enter in the Matlab editor.
 
@@ -54,6 +54,16 @@ Plug 'daeyun/vim-matlab'
 Install and run `:UpdateRemotePlugins`
 
 Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to use the snippets.
+
+
+### Configuration
+
+Use this option to control whether the plugin automatically generates key mappings (default = 1).
+
+``` vim
+let g:matlab_auto_mappings = 0 "automatic mappings disabled
+let g:matlab_auto_mappings = 1 "automatic mappings enabled
+```
 
 
 ### Development
