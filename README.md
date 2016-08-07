@@ -56,6 +56,15 @@ Install and run `:UpdateRemotePlugins`
 Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to use the snippets.
 
 
+### Configuration
+
+Use this option to prevent the plugin from automatically generating key mappings (default = 1).
+
+```
+let g:matlab_auto_mappings = 0
+```
+
+
 ### Development
 
 Set up a symlink so that the plugin directory points to your repository.
