@@ -58,10 +58,11 @@ Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to 
 
 ### Configuration
 
-Use this option to prevent the plugin from automatically generating key mappings (default = 1).
+Use this option to control whether the plugin automatically generates key mappings (default = 1).
 
-```
-let g:matlab_auto_mappings = 0
+``` vim
+let g:matlab_auto_mappings = 0 "automatic mappings disabled
+let g:matlab_auto_mappings = 1 "automatic mappings enabled
 ```
 
 
