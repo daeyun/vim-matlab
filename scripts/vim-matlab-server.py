@@ -99,6 +99,7 @@ def status_monitor_thread(matlab):
         matlab.proc.wait()
         print_flush("Restarting...")
         matlab.launch_process()
+        start_thread(target=forward_input, args=(matlab,))
         time.sleep(1)
 
 def forward_input(matlab):
@@ -108,6 +109,11 @@ def forward_input(matlab):
     else:
         while True:
             matlab.proc.stdin.write(stdin.readline())
+
+def start_thread(target=None, args=()):
+    thread = threading.Thread(target=target, args=args)
+    thread.daemon = True
+    thread.start()
 
 def print_flush(value):
     """Manually flush the line if using pexpect."""
@@ -121,13 +127,8 @@ def main():
     server = SocketServer.TCPServer((host, port), TCPHandler)
     server.matlab = Matlab()
 
-    t = threading.Thread(target=status_monitor_thread, args=(server.matlab,))
-    t.daemon = True
-    t.start()
-
-    input_t = threading.Thread(target=forward_input, args=(server.matlab,))
-    input_t.daemon = True
-    input_t.start()
+    start_thread(target=forward_input, args=(server.matlab,))
+    start_thread(target=status_monitor_thread, args=(server.matlab,))
 
     print_flush("Started server: {}".format((host, port)))
     server.serve_forever()
