@@ -2,7 +2,13 @@
 
 __author__ = 'daeyun'
 
-from subprocess import Popen, PIPE
+try:
+    import pexpect
+    use_pexpect = True
+except ImportError:
+    from subprocess import Popen, PIPE
+    use_pexpect = False
+
 import signal
 import os
 import SocketServer
@@ -19,8 +25,11 @@ class Matlab:
 
     def launch_process(self):
         self.kill()
-        self.proc = Popen(["matlab", "-nosplash", "-nodesktop"], stdin=PIPE,
-                     close_fds=True, preexec_fn=os.setsid)
+        if use_pexpect:
+            self.proc = pexpect.spawn("matlab", ["-nosplash", "-nodesktop"])
+        else:
+            self.proc = Popen(["matlab", "-nosplash", "-nodesktop"], stdin=PIPE,
+                              close_fds=True, preexec_fn=os.setsid)
         return self.proc
 
     def cancel(self):
@@ -36,17 +45,23 @@ class Matlab:
         num_retry = 0
         rand_var = ''.join(
             random.choice(string.ascii_uppercase) for _ in range(12))
+        code_with_timer = ("{randvar}=tic;{code},try,toc({randvar}),catch,"
+                           "end,clear('{randvar}');\n").format(
+                               randvar=rand_var, code=code.strip())
+        code_without_timer = "{}\n".format(code.strip())
         while num_retry < 3:
             try:
-                if run_timer:
-                    self.proc.stdin.write(
-                        ("{randvar}=tic;{code},try,toc({randvar}),catch,"
-                         "end,clear('{randvar}');\n").format(
-                             randvar=rand_var, code=code.strip()))
+                if use_pexpect:
+                    if run_timer:
+                        self.proc.send(code_with_timer)
+                    else:
+                        self.proc.send(code_without_timer)
                 else:
-                    self.proc.stdin.write(
-                        "{}\n".format(code.strip()))
-                self.proc.stdin.flush()
+                    if run_timer:
+                        self.proc.stdin.write(code_with_timer)
+                    else:
+                        self.proc.stdin.write(code_without_timer)
+                    self.proc.stdin.flush()
                 break
             except Exception as ex:
                 print ex
@@ -58,14 +73,14 @@ class Matlab:
 
 class TCPHandler(SocketServer.StreamRequestHandler):
     def handle(self):
-        print "New connection: {}".format(self.client_address)
+        print_flush("New connection: {}".format(self.client_address))
 
         while True:
             msg = self.rfile.readline()
             if not msg:
                 break
             msg = msg.strip()
-            print (msg[:74] + '...') if len(msg) > 74 else msg
+            print_flush((msg[:74] + '...') if len(msg) > 74 else msg)
 
             options = {
                 'kill': self.server.matlab.kill,
@@ -76,20 +91,29 @@ class TCPHandler(SocketServer.StreamRequestHandler):
                 options[msg]()
             else:
                 self.server.matlab.run_code(msg)
-        print 'Connection closed: {}'.format(self.client_address)
+        print_flush('Connection closed: {}'.format(self.client_address))
 
 
 def status_monitor_thread(matlab):
     while True:
         matlab.proc.wait()
-        print "Restarting.."
+        print_flush("Restarting...")
         matlab.launch_process()
         time.sleep(1)
 
 def forward_input(matlab):
-    """Forwards input from stdin to matlab's process stdin"""
-    while True:
-        matlab.proc.stdin.write(stdin.readline())
+    """Forward stdin to Matlab.proc's stdin."""
+    if use_pexpect:
+        matlab.proc.interact()
+    else:
+        while True:
+            matlab.proc.stdin.write(stdin.readline())
+
+def print_flush(value):
+    """Manually flush the line if using pexpect."""
+    if use_pexpect:
+        value += ''.join('\b' for _ in range(len(value)))
+    print value
 
 def main():
     host, port = "localhost", 43889
@@ -97,15 +121,15 @@ def main():
     server = SocketServer.TCPServer((host, port), TCPHandler)
     server.matlab = Matlab()
 
-    t = threading.Thread(target=status_monitor_thread, args =(server.matlab,))
+    t = threading.Thread(target=status_monitor_thread, args=(server.matlab,))
     t.daemon = True
     t.start()
 
-    input_t = threading.Thread(target=forward_input, args =(server.matlab,))
+    input_t = threading.Thread(target=forward_input, args=(server.matlab,))
     input_t.daemon = True
     input_t.start()
 
-    print "Started server: {}".format((host, port))
+    print_flush("Started server: {}".format((host, port)))
     server.serve_forever()
 
 
