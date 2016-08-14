@@ -2,21 +2,24 @@
 
 __author__ = 'daeyun'
 
+use_pexpect = True
 try:
     import pexpect
-    use_pexpect = True
 except ImportError:
-    from subprocess import Popen, PIPE
     use_pexpect = False
+    from subprocess import Popen, PIPE
 
-import signal
-import os
 import SocketServer
-import time
+import os
 import random
+import signal
 import string
-from sys import stdin
+import sys
 import threading
+import time
+from sys import stdin
+
+hide_until_newline = False
 
 
 class Matlab:
@@ -45,22 +48,22 @@ class Matlab:
         num_retry = 0
         rand_var = ''.join(
             random.choice(string.ascii_uppercase) for _ in range(12))
-        code_with_timer = ("{randvar}=tic;{code},try,toc({randvar}),catch,"
-                           "end,clear('{randvar}');\n").format(
-                               randvar=rand_var, code=code.strip())
-        code_without_timer = "{}\n".format(code.strip())
+
+        if run_timer:
+            command = ("{randvar}=tic;{code},try,toc({randvar}),catch,end"
+                       ",clear('{randvar}');\n").format(randvar=rand_var,
+                                                        code=code.strip())
+        else:
+            command = "{}\n".format(code.strip())
+
+        global hide_until_newline
         while num_retry < 3:
             try:
                 if use_pexpect:
-                    if run_timer:
-                        self.proc.send(code_with_timer)
-                    else:
-                        self.proc.send(code_without_timer)
+                    self.proc.send(command)
+                    hide_until_newline = True
                 else:
-                    if run_timer:
-                        self.proc.stdin.write(code_with_timer)
-                    else:
-                        self.proc.stdin.write(code_without_timer)
+                    self.proc.stdin.write(command)
                     self.proc.stdin.flush()
                 break
             except Exception as ex:
@@ -68,7 +71,6 @@ class Matlab:
                 self.launch_process()
                 num_retry += 1
                 time.sleep(1)
-
 
 
 class TCPHandler(SocketServer.StreamRequestHandler):
@@ -80,7 +82,7 @@ class TCPHandler(SocketServer.StreamRequestHandler):
             if not msg:
                 break
             msg = msg.strip()
-            print_flush((msg[:74] + '...') if len(msg) > 74 else msg)
+            print_flush((msg[:74] + '...') if len(msg) > 74 else msg, end='')
 
             options = {
                 'kill': self.server.matlab.kill,
@@ -102,24 +104,51 @@ def status_monitor_thread(matlab):
         start_thread(target=forward_input, args=(matlab,))
         time.sleep(1)
 
+
+def output_filter(output_string):
+    """
+    If the global variable `hide_until_newline` is True, this function will
+    return an empty string until it sees a string that contains a newline.
+    Used with `pexpect.spawn.interact` and `pexpect.spawn.send` to hide the
+    raw command from being shown.
+
+    :param output_string: String forwarded from MATLAB's stdout. Provided
+    by `pexpect.spawn.interact`.
+    :return: The filtered string.
+    """
+    global hide_until_newline
+    if hide_until_newline:
+        if '\n' in output_string:
+            hide_until_newline = False
+            return output_string[output_string.find('\n'):]
+        else:
+            return ''
+    else:
+        return output_string
+
+
 def forward_input(matlab):
     """Forward stdin to Matlab.proc's stdin."""
     if use_pexpect:
-        matlab.proc.interact()
+        matlab.proc.interact(output_filter=output_filter)
     else:
         while True:
             matlab.proc.stdin.write(stdin.readline())
+
 
 def start_thread(target=None, args=()):
     thread = threading.Thread(target=target, args=args)
     thread.daemon = True
     thread.start()
 
-def print_flush(value):
+
+def print_flush(value, end='\n'):
     """Manually flush the line if using pexpect."""
     if use_pexpect:
-        value += ''.join('\b' for _ in range(len(value)))
-    print value
+        value += '\b' * len(value)
+    sys.stdout.write(value + end)
+    sys.stdout.flush()
+
 
 def main():
     host, port = "localhost", 43889
