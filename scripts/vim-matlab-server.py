@@ -60,8 +60,8 @@ class Matlab:
         while num_retry < 3:
             try:
                 if use_pexpect:
-                    self.proc.send(command)
                     hide_until_newline = True
+                    self.proc.send(command)
                 else:
                     self.proc.stdin.write(command)
                     self.proc.stdin.flush()
