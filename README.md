@@ -17,6 +17,8 @@ This will start a Matlab REPL and redirect commands received from Vim to Matlab.
 
 Then open Vim in another terminal and start editing .m files.
 
+Alternatively, launch a server instance from Vim using `:MatlabLaunchServer`. The server will be launched either in a Neovim terminal buffer or a tmux split (see [g:matlab_server_launcher](#configuration)).
+
 - `:MatlabCliCancel` (\<leader\>c) tells the server to send SIGINT to Matlab, canceling current operation.
 
 - `:MatlabCliRunSelection` executes the highlighted Matlab code.
@@ -32,6 +34,8 @@ Then open Vim in another terminal and start editing .m files.
 - `:MatlabVisualModeCreateCell` (C-l) inserts cell markers above and below the visual selection.
 
 - `:MatlabInsertModeCreateCell` (C-l) inserts a cell marker at the beginning of the current line.
+
+- `:MatlabLaunchServer` launches a server instance in a Vim or tmux split.
 
 See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available commands, and [vim-matlab.vim](ftplugin/matlab/vim-matlab.vim) for default key bindings.
 
@@ -58,11 +62,25 @@ Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to 
 
 ### Configuration
 
-Use this option to control whether the plugin automatically generates key mappings (default = 1).
+Use `g:matlab_auto_mappings` to control whether the plugin automatically generates key mappings (default = 1).
 
-``` vim
+```vim
 let g:matlab_auto_mappings = 0 "automatic mappings disabled
 let g:matlab_auto_mappings = 1 "automatic mappings enabled
+```
+
+Use `g:matlab_server_launcher` to control whether `:MatlabLaunchServer` uses a Vim or tmux split (default = `'vim'`).
+
+```vim
+let g:matlab_server_launcher = 'vim'  "launch the server in a Neovim terminal buffer
+let g:matlab_server_launcher = 'tmux' "launch the server in a tmux split
+```
+
+Use `g:matlab_server_split` to control whether `:MatlabLaunchServer` uses a vertical or horizontal split (default = `'vertical'`).
+
+```vim
+let g:matlab_server_split = 'vertical'   "launch the server in a vertical split
+let g:matlab_server_split = 'horizontal' "launch the server in a horizontal split
 ```
 
 
