@@ -56,6 +56,11 @@ class Matlab:
         else:
             command = "{}\n".format(code.strip())
 
+        # The maximum number of characters allowed on a single line in Matlab's CLI is 4096.
+        delim = ' ...\n'
+        line_size = 4095 - len(delim)
+        command = delim.join([command[i:i+line_size] for i in range(0, len(command), line_size)])
+
         global hide_until_newline
         while num_retry < 3:
             try:
