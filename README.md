@@ -3,6 +3,21 @@ vim-matlab
 
 An alternative to Matlab's default editor for Vim users.
 
+### FAQ
+
+##### How do I run code cells (`%%` blocks)?
+
+In Normal mode, press `<Enter>` or `<C-m>`. The editor will parse the code in the current cell and send to MATLAB for evaluation.
+
+##### What if I need MATLAB's GUI features?
+
+Most MATLAB windows can be launched through commands; even in `-nodisplay` mode. For example, [workspace](https://www.mathworks.com/help/matlab/ref/workspace.html) command opens the Workspace browser.
+
+<img width="400" alt="screenshot 2016-08-18 20 57 56" src="https://cloud.githubusercontent.com/assets/1250682/17795452/82df34fe-6586-11e6-8049-6fc6712c9b0e.png">
+
+If you need to access the debugger, use [edit](https://www.mathworks.com/help/matlab/ref/edit.html) to open the default GUI editor.
+
+
 ### Usage
 
 `vim-matlab` works by remotely controlling a CLI Matlab instance (launched by `vim-matlab-server.py`).
