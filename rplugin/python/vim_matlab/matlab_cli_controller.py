@@ -40,7 +40,7 @@ class MatlabCliController:
         self.run_code(["addpath(genpath('{}'));".format(mpath)])
 
     def open_in_matlab_editor(self, path):
-        self.run_code(["edit {};".format(path)])
+        self.run_code(["edit '{}';".format(path)])
 
     def open_workspace(self):
         self.run_code(["workspace;"])
