@@ -3,13 +3,13 @@ vim-matlab
 
 An alternative to Matlab's default editor for Vim users.
 
-### FAQ
+## FAQ
 
-##### How do I run code cells (`%%` blocks)?
+#### How do I run code cells (`%%` blocks)?
 
 In Normal mode, press `<Enter>` or `<C-m>`. The editor will parse the code in the current cell and send to MATLAB for evaluation.
 
-##### What if I need MATLAB's GUI features?
+#### What if I need MATLAB's GUI features?
 
 Most MATLAB windows can be launched through commands; even in `-nodisplay` mode. For example, [workspace](https://www.mathworks.com/help/matlab/ref/workspace.html) command opens the Workspace browser.
 
@@ -17,8 +17,23 @@ Most MATLAB windows can be launched through commands; even in `-nodisplay` mode.
 
 If you need to access the debugger, use [edit](https://www.mathworks.com/help/matlab/ref/edit.html) to open the default GUI editor.
 
+#### Error: `E492: Not an editor command`
 
-### Usage
+If this the first time you're installing a Python plugin written for Neovim, you should install [python-client](https://github.com/neovim/python-client) and run `:UpdateRemotePlugins`.
+
+The recommended way to install this plugin is to use the plugin manager [vim-plug](https://github.com/junegunn/vim-plug) and add this to your `.vimrc` or `init.vim`:
+
+```vim
+function! DoRemote(arg)
+  UpdateRemotePlugins
+endfunction
+
+Plug 'daeyun/vim-matlab', { 'do': function('DoRemote') }
+```
+
+
+
+## Usage
 
 `vim-matlab` works by remotely controlling a CLI Matlab instance (launched by `vim-matlab-server.py`).
 
@@ -56,7 +71,7 @@ See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available c
 
 ![Screenshot](/docs/images/screenshot.png)
 
-### Installation
+## Installation
 
 Install the python3 client for Neovim.
 
@@ -75,7 +90,7 @@ Install and run `:UpdateRemotePlugins`
 Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to use the snippets.
 
 
-### Configuration
+## Configuration
 
 Use `g:matlab_auto_mappings` to control whether the plugin automatically generates key mappings (default = 1).
 
@@ -99,7 +114,7 @@ let g:matlab_server_split = 'horizontal' "launch the server in a horizontal spli
 ```
 
 
-### Development
+## Development
 
 Set up a symlink so that the plugin directory points to your repository.
 
@@ -114,7 +129,7 @@ After changing the code, run `scripts/reload-vim.sh` (optionally pass in a file 
 For testing, install [pytest](https://github.com/pytest-dev/pytest/) and run `scripts/run-tests.sh`.
 
 
-### Recommended Plugins
+## Recommended Plugins
 
 - [MatlabFilesEdition](http://www.vim.org/scripts/script.php?script_id=2407)
 - [matchit.zip](http://www.vim.org/scripts/script.php?script_id=39)
