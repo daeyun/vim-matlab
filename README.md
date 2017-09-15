@@ -71,23 +71,28 @@ See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available c
 
 ![Screenshot](/docs/images/screenshot.png)
 
+
 ## Installation
 
-Install the python3 client for Neovim.
+1. Install the python3 client for Neovim:
 
 ```
 pip3 install neovim
 ```
 
-Add to `.vimrc` (or `~/.config/nvim/init.vim`). e.g. using [vim-plug](https://github.com/junegunn/vim-plug),
+2. Add to `.vimrc` (or `~/.config/nvim/init.vim`). e.g. using [vim-plug](https://github.com/junegunn/vim-plug):
 
 ```
 Plug 'daeyun/vim-matlab'
 ```
 
-Install and run `:UpdateRemotePlugins`
+3. Register the plugin inside Neovim:
 
-Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to use the snippets.
+```
+:UpdateRemotePlugins
+```
+
+4. Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to use the snippets.
 
 
 ## Configuration
