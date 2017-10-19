@@ -72,6 +72,11 @@ See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available c
 ![Screenshot](/docs/images/screenshot.png)
 
 
+### Snippets
+
+Optionally, install a snippet engine such as [SirVer/ultisnips](https://github.com/SirVer/ultisnips) or [vim-snipmate](https://github.com/garbas/vim-snipmate) to use the [included snippets](https://github.com/daeyun/vim-matlab/blob/master/snippets/matlab.snippets). We also recommend installing [vim-snippets](https://github.com/honza/vim-snippets). We welcome any contributions to extend the `matlab.snippets` file.
+
+
 ## Installation
 
 1. Install the python3 client for Neovim:
@@ -91,8 +96,6 @@ Plug 'daeyun/vim-matlab'
 ```
 :UpdateRemotePlugins
 ```
-
-4. Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to use the snippets.
 
 
 ## Configuration
