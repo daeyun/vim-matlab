@@ -72,10 +72,6 @@ See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available c
 ![Screenshot](/docs/images/screenshot.png)
 
 
-### Snippets
-
-Optionally, 
-
 
 ## Installation
 
