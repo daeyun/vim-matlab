@@ -74,7 +74,7 @@ See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available c
 
 ### Snippets
 
-Optionally, install a snippet engine such as [SirVer/ultisnips](https://github.com/SirVer/ultisnips) or [vim-snipmate](https://github.com/garbas/vim-snipmate) to use the [included snippets](https://github.com/daeyun/vim-matlab/blob/master/snippets/matlab.snippets). We also recommend installing [vim-snippets](https://github.com/honza/vim-snippets). We welcome any contributions to extend the `matlab.snippets` file.
+Optionally, 
 
 
 ## Installation
@@ -95,6 +95,16 @@ Plug 'daeyun/vim-matlab'
 
 ```
 :UpdateRemotePlugins
+```
+
+### Optional steps (recommended)
+
+4. Install a snippet engine such as [SirVer/ultisnips](https://github.com/SirVer/ultisnips) or [vim-snipmate](https://github.com/garbas/vim-snipmate) to use the [included snippets](https://github.com/daeyun/vim-matlab/blob/master/snippets/matlab.snippets). We also recommend installing [vim-snippets](https://github.com/honza/vim-snippets). We welcome any contributions to extend the `matlab.snippets` file.
+
+5. Install pexpect for improved interactivity with the MATLAB console (e.g. tab completion):
+
+```
+pip3 install pexpect
 ```
 
 
