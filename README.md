@@ -94,6 +94,12 @@ Plug 'daeyun/vim-matlab'
 
 4. Optionally install [SirVer/ultisnips](https://github.com/honza/vim-snippets) to use the snippets.
 
+5. Optionally install pexpect for improved interactivity with the MATLAB console:
+
+```
+pip3 install pexpect
+```
+
 
 ## Configuration
 
