@@ -143,7 +143,7 @@ def output_filter(output_string):
 def input_filter(input_string):
     # Detect C-\
     if input_string == '\x1c':
-        print('Terminating')
+        print_flush('Terminating')
         global auto_restart
         auto_restart = False
     return input_string
