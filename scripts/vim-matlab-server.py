@@ -20,6 +20,8 @@ import time
 from sys import stdin
 
 hide_until_newline = False
+auto_restart = True
+server = None
 
 
 class Matlab:
@@ -104,10 +106,16 @@ class TCPHandler(SocketServer.StreamRequestHandler):
 def status_monitor_thread(matlab):
     while True:
         matlab.proc.wait()
+        if not auto_restart:
+            break
         print_flush("Restarting...")
         matlab.launch_process()
         start_thread(target=forward_input, args=(matlab,))
         time.sleep(1)
+
+    global server
+    server.shutdown()
+    server.server_close()
 
 
 def output_filter(output_string):
@@ -132,10 +140,19 @@ def output_filter(output_string):
         return output_string
 
 
+def input_filter(input_string):
+    # Detect C-\
+    if input_string == '\x1c':
+        print('Terminating')
+        global auto_restart
+        auto_restart = False
+    return input_string
+
+
 def forward_input(matlab):
     """Forward stdin to Matlab.proc's stdin."""
     if use_pexpect:
-        matlab.proc.interact(output_filter=output_filter)
+        matlab.proc.interact(input_filter=input_filter,output_filter=output_filter)
     else:
         while True:
             matlab.proc.stdin.write(stdin.readline())
@@ -158,6 +175,8 @@ def print_flush(value, end='\n'):
 def main():
     host, port = "localhost", 43889
     SocketServer.TCPServer.allow_reuse_address = True
+
+    global server
     server = SocketServer.TCPServer((host, port), TCPHandler)
     server.matlab = Matlab()
 
