@@ -3,10 +3,12 @@
 __author__ = 'daeyun'
 
 use_pexpect = True
-try:
-    import pexpect
-except ImportError:
-    use_pexpect = False
+if use_pexpect:
+    try:
+        import pexpect
+    except ImportError:
+        use_pexpect = False
+if not use_pexpect:
     from subprocess import Popen, PIPE
 
 import SocketServer
