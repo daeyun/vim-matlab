@@ -1,4 +1,3 @@
-vim.cmd([[
 setlocal shortmess+=A
 setlocal formatoptions-=cro
 
@@ -46,4 +45,3 @@ if g:matlab_auto_mappings
   vnoremap <buffer><silent> <C-l> :<C-u>MatlabVisualModeCreateCell<CR>
   inoremap <buffer><silent> <C-l> <C-o>:MatlabInsertModeCreateCell<CR>
 endif
-]])
