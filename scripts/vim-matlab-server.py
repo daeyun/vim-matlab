@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/Users/randyxiao/opt/anaconda3/bin/python
 
 __author__ = 'daeyun'
 
