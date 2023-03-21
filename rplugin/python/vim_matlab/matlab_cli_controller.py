@@ -1,13 +1,16 @@
 import time
 from threading import Timer
 
-from io_helper import find_plugin_matlab_path
+from . import io_helper
+
+# find_plugin_matlab_path as find_plugin_matlab_path 
+# from io_helper import find_plugin_matlab_path
 
 
 __author__ = 'daeyun'
 
 import socket
-import logger
+from . import logger
 
 
 class MatlabCliController:
@@ -36,7 +39,7 @@ class MatlabCliController:
                 time.sleep(1)
 
     def setup_matlab_path(self):
-        mpath = find_plugin_matlab_path()
+        mpath = io_helper.find_plugin_matlab_path()
         self.run_code(["addpath(genpath('{}'));".format(mpath)])
 
     def open_in_matlab_editor(self, path):

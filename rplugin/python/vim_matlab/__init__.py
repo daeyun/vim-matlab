@@ -9,9 +9,9 @@ import collections
 import neovim
 
 from . import matlab_cli_controller
-from matlab_cli_controller import MatlabCliController
-from python_vim_utils import PythonVimUtils as vim_helper
-import python_vim_utils
+# from matlab_cli_controller import MatlabCliController
+from .python_vim_utils import PythonVimUtils as vim_helper
+from . import python_vim_utils
 
 
 __created__ = 'Mar 01, 2015'
@@ -79,7 +79,7 @@ class VimMatlab(object):
     def activate_cli(self):
         if self.cli_controller is not None:
             return
-        self.cli_controller = MatlabCliController()
+        self.cli_controller = matlab_cli_controller.MatlabCliController()
 
     @neovim.command('MatlabCliViewVarUnderCursor', sync=True)
     def view_var_under_cursor(self):
