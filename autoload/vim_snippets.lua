@@ -1,3 +1,4 @@
+vim.cmd[[
 " this is well known Filename found in snipmate (and the other engines), but
 " rewritten and documented :)
 "
@@ -25,3 +26,5 @@ endf
 "     if filename == '' | return a:0 == 2 ? a:2 : '' | endif
 "     return !a:0 || a:1 == '' ? filename : substitute(a:1, '$1', filename, 'g')
 " endf
+]]
+
