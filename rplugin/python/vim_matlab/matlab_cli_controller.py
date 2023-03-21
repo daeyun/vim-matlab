@@ -22,6 +22,7 @@ class MatlabCliController:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.host, self.port))
         Timer(5, self.setup_matlab_path).start()
+        print("connected")
 
     def run_code(self, lines):
         code = ','.join(lines)
@@ -29,7 +30,9 @@ class MatlabCliController:
         num_retry = 0
         while num_retry < 3:
             try:
-                self.sock.sendall(code + "\n")
+                print(f"code-> {code}")
+                msg = code + "\n"
+                self.sock.sendall(msg.encode())
                 logger.log.info(code)
                 break
             except Exception as ex:
@@ -55,4 +58,4 @@ class MatlabCliController:
         self.run_code(["help {};".format(name)])
 
     def send_ctrl_c(self):
-        self.sock.sendall("cancel\n")
+        self.sock.sendall("cancel\n".encode())

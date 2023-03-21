@@ -87,6 +87,7 @@ class TCPHandler(SocketServer.StreamRequestHandler):
 
         while True:
             msg = self.rfile.readline()
+            msg = msg.decode('utf-8')
             if not msg:
                 break
             msg = msg.strip()
@@ -131,14 +132,15 @@ def output_filter(output_string):
     :return: The filtered string.
     """
     global hide_until_newline
+    output_string = output_string.decode('utf-8')
     if hide_until_newline:
         if '\n' in output_string:
             hide_until_newline = False
-            return output_string[output_string.find('\n'):]
+            return output_string[output_string.find('\n'):].encode()
         else:
-            return ''
+            return ''.encode()
     else:
-        return output_string
+        return output_string.encode()
 
 
 def input_filter(input_string):
