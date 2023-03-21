@@ -1,5 +1,6 @@
-vim-matlab
-===========
+# vim-matlab
+
+New Version: Written in Python3
 
 An alternative to Matlab's default editor for Vim users.
 
@@ -30,8 +31,6 @@ endfunction
 
 Plug 'daeyun/vim-matlab', { 'do': function('DoRemote') }
 ```
-
-
 
 ## Usage
 
@@ -71,8 +70,6 @@ See [this file](rplugin/python/vim_matlab/__init__.py) for a list of available c
 
 ![Screenshot](/docs/images/screenshot.png)
 
-
-
 ## Installation
 
 1. Install the python3 client for Neovim:
@@ -103,7 +100,6 @@ Plug 'daeyun/vim-matlab'
 pip3 install pexpect
 ```
 
-
 ## Configuration
 
 Use `g:matlab_auto_mappings` to control whether the plugin automatically generates key mappings (default = 1).
@@ -127,7 +123,6 @@ let g:matlab_server_split = 'vertical'   "launch the server in a vertical split
 let g:matlab_server_split = 'horizontal' "launch the server in a horizontal split
 ```
 
-
 ## Development
 
 Set up a symlink so that the plugin directory points to your repository.
@@ -141,7 +136,6 @@ ln -nsf $(pwd)/vim-matlab ~/.vim/plugged/
 After changing the code, run `scripts/reload-vim.sh` (optionally pass in a file to open) to reload.
 
 For testing, install [pytest](https://github.com/pytest-dev/pytest/) and run `scripts/run-tests.sh`.
-
 
 ## Recommended Plugins
 
