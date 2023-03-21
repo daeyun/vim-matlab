@@ -8,7 +8,7 @@ import collections
 
 import neovim
 
-import matlab_cli_controller
+from . import matlab_cli_controller
 from matlab_cli_controller import MatlabCliController
 from python_vim_utils import PythonVimUtils as vim_helper
 import python_vim_utils
