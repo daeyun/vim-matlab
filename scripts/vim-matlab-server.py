@@ -76,7 +76,7 @@ class Matlab:
                     self.proc.stdin.flush()
                 break
             except Exception as ex:
-                print ex
+                print (ex)
                 self.launch_process()
                 num_retry += 1
                 time.sleep(1)
