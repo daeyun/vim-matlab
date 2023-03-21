@@ -1,3 +1,4 @@
+vim.cmd[[
 " Vim syntax file
 " Language:	Matlab
 " Maintainer:	Fabrice Guy <fabrice.guy at gmail dot com>
@@ -365,3 +366,4 @@ let b:current_syntax = "matlab"
 
 
 "EOF	vim: ts=8 noet tw=100 sw=8 sts=0
+]]

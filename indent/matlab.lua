@@ -1,3 +1,4 @@
+vim.cmd([[
 " Matlab indent file
 " Language:	Matlab
 " Maintainer:	Original author: Fabrice Guy <fabrice.guy at gmail dot com>
@@ -145,3 +146,4 @@ function GetMatlabIndent()
 endfunction
 
 " vim:sw=2
+]])
