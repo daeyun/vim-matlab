@@ -10,7 +10,7 @@ if use_pexpect:
 if not use_pexpect:
     from subprocess import Popen, PIPE
 
-import socketserver SocketServer
+import socketserver as SocketServer
 import os
 import random
 import signal
