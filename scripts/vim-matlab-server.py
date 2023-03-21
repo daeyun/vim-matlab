@@ -1,6 +1,5 @@
 #!/Users/randyxiao/opt/anaconda3/bin/python
 
-__author__ = 'daeyun'
 
 use_pexpect = True
 if use_pexpect:
@@ -11,7 +10,7 @@ if use_pexpect:
 if not use_pexpect:
     from subprocess import Popen, PIPE
 
-import SocketServer
+import socketserver SocketServer
 import os
 import random
 import signal
