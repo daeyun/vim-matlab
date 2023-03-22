@@ -1,4 +1,4 @@
-#!/Users/randyxiao/opt/anaconda3/bin/python
+#!python
 
 
 use_pexpect = True
